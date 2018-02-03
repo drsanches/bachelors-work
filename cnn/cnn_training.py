@@ -5,6 +5,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
 from keras.callbacks import TensorBoard
+from functions import array_functions
 
 
 # Set seed for repeatable of results
@@ -27,6 +28,11 @@ X_train = X_train.astype('float32')
 X_test = X_test.astype('float32')
 X_train /= 255
 X_test /= 255
+
+a = numpy.copy(X_train[0])
+a = a.reshape(a.shape[0], a.shape[1])
+print(a.shape)
+array_functions.write_array_in_file(a, "X_train_0.txt")
 
 # Converting labels to categories
 Y_train = np_utils.to_categorical(y_train, 10)
@@ -53,7 +59,7 @@ print(model.summary())
 tensorboard=TensorBoard(log_dir='./logs', write_graph=True)
 history = model.fit(X_train, Y_train,
                     batch_size=200,
-                    epochs=1,
+                    epochs=3,
                     verbose=1,
                     validation_split=0.1,
                     callbacks=[tensorboard])

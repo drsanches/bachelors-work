@@ -32,8 +32,16 @@ namespace Math_Recognition
                     array[i, j] = 1;
             }
 
+
             recognizer = new Recognizer(filename);
             recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));
+
+
+            //NeuralNetwork cnn = new NeuralNetwork();
+            //List<Rectangle> rects = new List<Rectangle>();
+            //rects.Add(new Rectangle(bitmap));
+            //cnn.RecognizeList(rects);
+
 
             InitializeComponent();
         }

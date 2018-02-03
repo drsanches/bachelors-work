@@ -14,9 +14,10 @@ namespace Math_Recognition
         public int TopLeftX, TopLeftY;
         public int Width, Height;
         public int[,] Array;
-        public string label = "";
+        public string label;
         public Rectangle(int topLeftX, int topLeftY, int width, int height, int[,] array, int startAtArrayX, int startAtArrayY)
         {
+            label = "";
             TopLeftX = topLeftX;
             TopLeftY = topLeftY;
             Width = width;
@@ -28,6 +29,7 @@ namespace Math_Recognition
         }
         public Rectangle(int topLeftX, int topLeftY, int width, int height)
         {
+            label = "";
             TopLeftX = topLeftX;
             TopLeftY = topLeftY;
             Width = width;
@@ -37,6 +39,7 @@ namespace Math_Recognition
         //TODO: Create mask
         public Rectangle(Bitmap bitmap)
         {
+            label = "";
             TopLeftX = 0;
             TopLeftY = 0;
             Width = bitmap.Width;

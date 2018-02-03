@@ -15,7 +15,6 @@ namespace Math_Recognition
 
         public Recognizer(string filename)
         {
-            Filename = filename;
             Recognized = new List<Rectangle>();
             NotRecognized = new List<Rectangle>();
             CanNotBeRecognized = new List<Rectangle>();
