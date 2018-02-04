@@ -28,13 +28,13 @@ namespace Math_Recognition
             foreach (Rectangle rect in notRecognized)
             {
                 //For normal work
-                //string arrayPath = CreateArrayFile(rect, TEMP_DIRECTORY_PATH);
-                //RecognizeOne(rect, arrayPath);
+                string arrayPath = CreateArrayFile(rect, TEMP_DIRECTORY_PATH);
+                string result = RecognizeOne(rect, arrayPath);
 
                 //For debug
-                string result = RecognizeOne(rect, "..\\..\\..\\..\\cnn\\tools\\1.txt");
+                //string result = RecognizeOne(rect, "..\\..\\..\\..\\cnn\\tools\\1.txt");
 
-                if (result.Equals("Error"))
+                if (result.Equals("Error\r\n"))
                     NotRecognized.Add(rect);
                 else
                 {

@@ -31,7 +31,7 @@ X_test /= 255
 
 a = numpy.copy(X_train[0])
 a = a.reshape(a.shape[0], a.shape[1])
-print(a.shape)
+# print(a.shape)
 array_functions.write_array_in_file(a, "X_train_0.txt")
 
 # Converting labels to categories
@@ -59,7 +59,7 @@ print(model.summary())
 tensorboard=TensorBoard(log_dir='./logs', write_graph=True)
 history = model.fit(X_train, Y_train,
                     batch_size=200,
-                    epochs=3,
+                    epochs=30,
                     verbose=1,
                     validation_split=0.1,
                     callbacks=[tensorboard])
@@ -70,7 +70,7 @@ print("Точность работы на тестовых данных: %.2f%%"
 
 # Saving
 json_model = model.to_json()
-json_file = open("cnn1.json", "w")
+json_file = open("cnn_data\\cnn2.json", "w")
 json_file.write(json_model)
 json_file.close()
-model.save_weights("cnn1.h5")
+model.save_weights("cnn_data\\cnn2.h5")

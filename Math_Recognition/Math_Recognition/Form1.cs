@@ -13,7 +13,7 @@ namespace Math_Recognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\Example5.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\digits.png";
         Bitmap bitmap;
         Graphics g;
         public Recognizer recognizer;
@@ -35,13 +35,6 @@ namespace Math_Recognition
 
             recognizer = new Recognizer(filename);
             recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));
-
-
-            //NeuralNetwork cnn = new NeuralNetwork();
-            //List<Rectangle> rects = new List<Rectangle>();
-            //rects.Add(new Rectangle(bitmap));
-            //cnn.RecognizeList(rects);
-
 
             InitializeComponent();
         }
@@ -67,19 +60,10 @@ namespace Math_Recognition
                 e.Graphics.DrawRectangle(new Pen(Color.Red), r.TopLeftX, r.TopLeftY, r.Width, r.Height);
             }
 
-            //e.Graphics.DrawLine(new Pen(Color.Blue), results.X2, results.TopLeftY, results.X2, results.Y2);
-            //e.Graphics.DrawLine(new Pen(Color.Blue), results.TopLeftX, results.TopLeftY, results.TopLeftX, results.Y2);
-            //e.Graphics.DrawLine(new Pen(Color.Blue), results.TopLeftX, results.TopLeftY, results.X2, results.TopLeftY);
-            //e.Graphics.DrawLine(new Pen(Color.Blue), results.TopLeftX, results.Y2, results.X2, results.Y2);
-
-            //e.Graphics.DrawRectangle(new Pen(Color.Blue), rectangle.TopLeftX - 1, rectangle.TopLeftY - 1, rectangle.X2 - rectangle.TopLeftX + 2, rectangle.Y2 - rectangle.TopLeftY + 2);
-
-            //foreach (int w in HorizontalLines)
-            //    e.Graphics.DrawLine(new Pen(Color.Red), 0, w, bitmap.Width, w);
-
-            //foreach (int h in VerticalLines)
-            //    e.Graphics.DrawLine(new Pen(Color.Red), h, 0, h, bitmap.Height);
-
+            foreach (Rectangle r in recognizer.Recognized)
+            {
+                e.Graphics.DrawString(r.label, new Font("Arial", 16), new SolidBrush(Color.Red), r.TopLeftX, r.TopLeftY);
+            }
         }
 
         private void Form1_Activated(object sender, EventArgs e)
