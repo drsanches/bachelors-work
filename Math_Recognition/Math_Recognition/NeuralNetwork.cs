@@ -42,6 +42,8 @@ namespace Math_Recognition
                     newRectangle.label = result;
                     Recognized.Add(newRectangle);
                 }
+
+                DeleteArrayFile(arrayPath);
             }
         }
         private string CreateArrayFile(Rectangle rectangle, string tempDirectoryPath)
@@ -75,6 +77,10 @@ namespace Math_Recognition
             p.Close();
 
             return results[0];
+        }
+        private void DeleteArrayFile(string filepath)
+        {
+            File.Delete(filepath);
         }
     }
 }
