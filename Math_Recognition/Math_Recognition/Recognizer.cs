@@ -12,12 +12,18 @@ namespace Math_Recognition
         public List<Rectangle> Recognized;
         public List<Rectangle> NotRecognized;
         public List<Rectangle> CanNotBeRecognized;
+        private Segmentation segmentation;
+        private NeuralNetwork neuralNetwork;
+        private Structuring structuring;
 
-        public Recognizer(string filename)
+        public Recognizer(Segmentation segm, NeuralNetwork net, Structuring str)
         {
             Recognized = new List<Rectangle>();
             NotRecognized = new List<Rectangle>();
             CanNotBeRecognized = new List<Rectangle>();
+            segmentation = segm;
+            neuralNetwork = net;
+            structuring = str;
         }
         public void Recognize(Rectangle rectangle)
         {
@@ -27,17 +33,18 @@ namespace Math_Recognition
             {
                 NotRecognized = MakeSegmentation(NotRecognized);
 
-                NeuralNetwork cnn = new NeuralNetwork();
-                cnn.RecognizeList(NotRecognized);
+                neuralNetwork.RecognizeList(NotRecognized);
                 
                 NotRecognized.Clear();
 
-                foreach (Rectangle rect in cnn.Recognized)
+                foreach (Rectangle rect in neuralNetwork.Recognized)
                     WhenRecognized(rect);
 
-                foreach (Rectangle rect in cnn.NotRecognized)
+                foreach (Rectangle rect in neuralNetwork.NotRecognized)
                     NotRecognized = SumLists(NotRecognized, WhenIsNotRecognized(rect));
-            } 
+            }
+
+            structuring.Run(Recognized);
         }
         private List<Rectangle> SumLists(List<Rectangle> a, List<Rectangle> b)
         {
@@ -50,7 +57,6 @@ namespace Math_Recognition
         }
         public List<Rectangle> MakeSegmentation(List<Rectangle> rectangles)
         {
-            Segmentation segmentation = new Segmentation();
             List<Rectangle> notRecognized = new List<Rectangle>();
 
             foreach (Rectangle rect in rectangles)
@@ -65,7 +71,6 @@ namespace Math_Recognition
         public List<Rectangle> WhenIsNotRecognized(Rectangle rectangle)
         {
             List<Rectangle> notRecognized = new List<Rectangle>();
-            Segmentation segmentation = new Segmentation();
 
             if (!segmentation.IsSeparableByLines(rectangle))
             {

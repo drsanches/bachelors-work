@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Math_Recognition
 {
-    class NeuralNetwork
+    public class NeuralNetwork
     {
         const string PYTHON_SCRIPT_DIRECTORY_PATH = "..\\..\\..\\..\\cnn\\";
         const string PYTHON_SCRIPT_NAME = "runnable_cnn.py";
@@ -32,9 +32,9 @@ namespace Math_Recognition
                 string result = RecognizeOne(rect, arrayPath);
 
                 //For debug
-                //string result = RecognizeOne(rect, "..\\..\\..\\..\\cnn\\tools\\1.txt");
+                //string result = RecognizeOne(rectangle, "..\\..\\..\\..\\cnn\\tools\\1.txt");
 
-                if (result.Equals("Error\r\n"))
+                if (result.Equals("Error"))
                     NotRecognized.Add(rect);
                 else
                 {

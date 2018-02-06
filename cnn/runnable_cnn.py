@@ -39,6 +39,7 @@ try:
     # print(result)
 
     label = label_functions.label_creator(result)
-    print(label)
 except:
-    print("Error")
+    label = "Error"
+finally:
+    print(label, end="")

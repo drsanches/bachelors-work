@@ -98,5 +98,12 @@ namespace Math_Recognition
                         return false;
             return true;
         }
+        public Point GetCentrePoint()
+        {
+            Point p = new Point();
+            p.X = TopLeftX + Width / 2;
+            p.Y = TopLeftY + Height / 2;
+            return p;
+        }
     }
 }

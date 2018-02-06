@@ -33,7 +33,10 @@ namespace Math_Recognition
             }
 
 
-            recognizer = new Recognizer(filename);
+            Segmentation segmentation = new Segmentation();
+            NeuralNetwork cnn = new NeuralNetwork();
+            Structuring structuring = new Structuring();
+            recognizer = new Recognizer(segmentation, cnn, structuring);
             recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));
 
             InitializeComponent();
@@ -48,6 +51,7 @@ namespace Math_Recognition
             foreach (Rectangle r in recognizer.Recognized)
             {
                 e.Graphics.DrawRectangle(new Pen(Color.Green), r.TopLeftX, r.TopLeftY, r.Width, r.Height);
+                e.Graphics.DrawEllipse(new Pen(Color.Red, 2), r.GetCentrePoint().X - 1, r.GetCentrePoint().Y - 1, 2, 2);
             }
 
             foreach (Rectangle r in recognizer.NotRecognized)
