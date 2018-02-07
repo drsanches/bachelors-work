@@ -13,7 +13,7 @@ namespace Math_Recognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\digits.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\0.png";
         Bitmap bitmap;
         Graphics g;
         public Recognizer recognizer;

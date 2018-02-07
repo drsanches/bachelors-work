@@ -9,23 +9,23 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        final String SYMBOLS_FILENAME = "dataset\\symbols.txt";
-        final String DIRECTORY = "dataset\\images";
-        final String OUTPUT_FILENAME = "dataset\\dataset.npz";
-        final String SCRIPT_FILENAME = "dataset\\images_to_dataset.py";
+        final String SYMBOLS_FILENAME = "..\\dataset\\symbols.txt";
+        final String IMAGES_DIRECTORY = "..\\dataset\\images";
+        final String OUTPUT_FILENAME = "..\\dataset\\dataset.npz";
+        final String SCRIPT_FILENAME = "images_to_dataset.py";
 
         try (Scanner scanner = new Scanner(new File(SYMBOLS_FILENAME))) {
             int count = 0;
             while (scanner.hasNext()) {
                 String symbol = scanner.nextLine();
                 if (!symbol.equals("")) {
-                    createSymbolImage(symbol, DIRECTORY + "\\" + count + ".png");
+                    createSymbolImage(symbol, IMAGES_DIRECTORY + "\\" + count + ".png");
                     System.out.println(symbol);
                     count++;
                 }
             }
             scanner.close();
-            imagesToDataset(SCRIPT_FILENAME, SYMBOLS_FILENAME, DIRECTORY, OUTPUT_FILENAME);
+            imagesToDataset(SCRIPT_FILENAME, SYMBOLS_FILENAME, IMAGES_DIRECTORY, OUTPUT_FILENAME);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }

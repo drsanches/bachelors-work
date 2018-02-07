@@ -43,7 +43,7 @@ namespace Math_Recognition
                     Recognized.Add(newRectangle);
                 }
 
-                DeleteArrayFile(arrayPath);
+                //DeleteArrayFile(arrayPath);
             }
         }
         private string CreateArrayFile(Rectangle rectangle, string tempDirectoryPath)

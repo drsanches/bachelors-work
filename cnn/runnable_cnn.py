@@ -2,10 +2,12 @@ import sys
 from keras.models import model_from_json
 from functions import array_functions
 from functions import label_functions
+import numpy
 
 
-input_width = 28
-input_height = 28
+filename = "..\\dataset\\symbols.txt"
+input_width = 50
+input_height = 50
 
 try:
     # For console run
@@ -16,29 +18,32 @@ try:
     array_path = str(sys.argv[1])
 
     # Debug
-    # array_path = "test_data\\1_long.txt"
+    # array_path = "..\\temp\\Test_0.txt"
     # script_directory_path = ""
 
     input = array_functions.read_array_from_file(array_path)
-    input = array_functions.resize_array(input, input_width, input_height)
+    input = array_functions.input_array_scaling(input, (input_width, input_height))
+    input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
-    json_file = open(script_directory_path + "cnn_data\\cnn2.json", "r")
+    # Another debug
+    # data = numpy.load("..\\dataset\\dataset.npz")
+    # input = data["X_test"][0]
+    # array_functions.array_to_image(input).show()
+    # input = input.reshape(1, input.shape[0], input.shape[1], 1)
+
+    json_file = open(script_directory_path + "cnn_data\\cnn5.json", "r")
     loaded_model_json = json_file.read()
     json_file.close()
     model = model_from_json(loaded_model_json)
-    model.load_weights(script_directory_path + "cnn_data\\cnn2.h5")
+    model.load_weights(script_directory_path + "cnn_data\\cnn5.h5")
 
     model.compile(loss="categorical_crossentropy",
             optimizer="adam",
             metrics=["accuracy"])
 
-    X = array_functions.prepare_for_cnn(input)
-    result = model.predict_on_batch(X)
+    result = model.predict_on_batch(input)
 
-    # Debug
-    # print(result)
-
-    label = label_functions.label_creator(result)
+    label = label_functions.label_creator(result, script_directory_path + filename)
 except:
     label = "Error"
 finally:
