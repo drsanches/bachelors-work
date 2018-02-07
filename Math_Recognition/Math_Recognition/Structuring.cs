@@ -8,8 +8,13 @@ namespace Math_Recognition
 {
     public class Structuring
     {
-        const double CENTRE_DISPLACEMENT_COEFFICIENT = 0.2;
+        const double SEARCH_TOP = 0.4; // Not for \frac and 0 positions (e.g. vectors)
+        const double SEARCH_DOWN = 0.4; // 
+        const double SEARCH_RIGHT = 1;
+        const double SEARCH_LEFT = 1;
 
+        const double CENTRE_DISPLACEMENT_COEFFICIENT = 0.2;
+        
         List<List<Symbol>> Baselines;
         List<Rectangle> Rectangles;
 
@@ -34,8 +39,8 @@ namespace Math_Recognition
             {
                 foreach (Symbol s in Baselines[line])
                     if (IsAtOneLine(Rectangles[s.RectangleIndex], rectangle)) 
-                    { 
-                        Baselines[line].Add(new Symbol(rectIndex));
+                    {
+                        Baselines[line].Add(new Symbol(rectIndex, Rectangles[rectIndex]));
                         isAdded = true;
                         break;
                     }
@@ -47,7 +52,7 @@ namespace Math_Recognition
             if (!isAdded)
             {
                 Baselines.Add(new List<Symbol>());
-                Baselines.Last().Add(new Symbol(rectIndex));
+                Baselines.Last().Add(new Symbol(rectIndex, Rectangles[rectIndex]));
             }
         }
         private bool IsAtOneLine(Rectangle rect1, Rectangle rect2)

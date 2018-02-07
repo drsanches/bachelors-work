@@ -29,11 +29,6 @@ X_test = X_test.astype('float32')
 X_train /= 255
 X_test /= 255
 
-a = numpy.copy(X_train[0])
-a = a.reshape(a.shape[0], a.shape[1])
-# print(a.shape)
-array_functions.write_array_in_file(a, "X_train_0.txt")
-
 # Converting labels to categories
 Y_train = np_utils.to_categorical(y_train, 10)
 Y_test = np_utils.to_categorical(y_test, 10)
