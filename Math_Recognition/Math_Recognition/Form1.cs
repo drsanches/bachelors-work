@@ -13,7 +13,7 @@ namespace Math_Recognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\0.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\test2.png";
         Bitmap bitmap;
         Graphics g;
         public Recognizer recognizer;
@@ -51,7 +51,7 @@ namespace Math_Recognition
             foreach (Rectangle r in recognizer.Recognized)
             {
                 e.Graphics.DrawRectangle(new Pen(Color.Green), r.TopLeftX, r.TopLeftY, r.Width, r.Height);
-                e.Graphics.DrawEllipse(new Pen(Color.Red, 2), r.GetCentrePoint().X - 1, r.GetCentrePoint().Y - 1, 2, 2);
+                //e.Graphics.DrawEllipse(new Pen(Color.Red, 2), r.GetCentrePoint().X - 1, r.GetCentrePoint().Y - 1, 2, 2);
             }
 
             foreach (Rectangle r in recognizer.NotRecognized)

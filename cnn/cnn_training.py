@@ -25,6 +25,9 @@ model.add(Dropout(0.2))
 model.add(Conv2D(100, (5, 5), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.2))
+model.add(Conv2D(125, (5, 5), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
 model.add(Flatten())
 model.add(Dense(500, activation='relu'))
 model.add(Dropout(0.5))
@@ -38,7 +41,7 @@ print(model.summary())
 tensorboard=TensorBoard(log_dir='./logs', write_graph=True)
 history = model.fit(X_train, Y_train,
                     batch_size=100,
-                    epochs=30,
+                    epochs=60,
                     verbose=1,
                     validation_split=0.1,
                     callbacks=[tensorboard])
@@ -49,7 +52,7 @@ print("Точность работы на тестовых данных: %.2f%%"
 
 # Saving
 json_model = model.to_json()
-json_file = open("cnn_data\\cnn5.json", "w")
+json_file = open("cnn_data\\cnn9.json", "w")
 json_file.write(json_model)
 json_file.close()
-model.save_weights("cnn_data\\cnn5.h5")
+model.save_weights("cnn_data\\cnn9.h5")

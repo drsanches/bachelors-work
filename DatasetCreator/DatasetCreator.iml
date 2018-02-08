@@ -10,5 +10,6 @@
     <orderEntry type="library" name="jlatexmath-1.0.6" level="project" />
     <orderEntry type="library" name="jlatexmath-font-cyrillic-1.0.6" level="project" />
     <orderEntry type="library" name="jlatexmath-font-greek-1.0.6" level="project" />
+    <orderEntry type="library" name="java-json" level="project" />
   </component>
 </module>

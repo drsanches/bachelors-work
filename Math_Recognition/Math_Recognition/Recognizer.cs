@@ -42,6 +42,9 @@ namespace Math_Recognition
 
                 foreach (Rectangle rect in neuralNetwork.NotRecognized)
                     NotRecognized = SumLists(NotRecognized, WhenIsNotRecognized(rect));
+
+                neuralNetwork.Recognized.Clear();
+                neuralNetwork.NotRecognized.Clear();
             }
 
             structuring.Run(Recognized);
