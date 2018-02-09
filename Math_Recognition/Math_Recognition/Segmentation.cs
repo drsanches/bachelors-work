@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace Math_Recognition
 {
+    //TODO: cuts a little from below
     public class Segmentation
     {
         public Segmentation()

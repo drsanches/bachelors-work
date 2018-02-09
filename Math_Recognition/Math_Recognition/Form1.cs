@@ -12,7 +12,7 @@ namespace Math_Recognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\Baseline.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\Baselines.png";
         Bitmap bitmap;
         Graphics g;
         public Recognizer recognizer;
@@ -29,7 +29,7 @@ namespace Math_Recognition
             for (int i = 0; i < bitmap.Width; i++)
             for (int j = 0; j < bitmap.Height; j++)
             {
-                if ((int)bitmap.GetPixel(i, j).GetBrightness() <= 0.5)
+                if ((int)bitmap.GetPixel(i, j).GetBrightness() <= 0.2)
                     array[i, j] = 1;
             }
 

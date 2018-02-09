@@ -31,7 +31,7 @@ try:
     input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
 
-    # Another debug
+    # Debug
     # data = numpy.load("..\\dataset\\dataset.npz")
     # num = 57
     # input = data["X_test"][num]
