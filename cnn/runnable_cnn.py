@@ -32,12 +32,12 @@ try:
 
 
     # Another debug
-    data = numpy.load("..\\dataset\\dataset.npz")
-    num = 57
-    input = data["X_test"][num]
-    print(data["Y_test"][num])
-    array_functions.array_to_image(input).show()
-    input = input.reshape(1, input.shape[0], input.shape[1], 1)
+    # data = numpy.load("..\\dataset\\dataset.npz")
+    # num = 57
+    # input = data["X_test"][num]
+    # print(data["Y_test"][num])
+    # array_functions.array_to_image(input).show()
+    # input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
 
     json_file = open(script_directory_path + "cnn_data\\cnn9.json", "r")
@@ -62,7 +62,7 @@ try:
     result = model.predict_on_batch(input)
 
     # Debug
-    print(result)
+    # print(result)
 
     label = label_functions.label_creator(result, script_directory_path + filename)
 except:
