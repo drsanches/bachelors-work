@@ -1,0 +1,95 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Drawing;
+
+namespace Math_Recognition
+{
+    public class Recognizer
+    {
+        public List<Rectangle> Recognized;
+        public List<Rectangle> NotRecognized;
+        public List<Rectangle> CanNotBeRecognized;
+        private SegmentationAbstractFactory segmentation;
+        private NeuralNetworkAbstractFactory neuralNetwork;
+        private StructuringAbstractFactory structuring;
+
+        public Recognizer(SegmentationAbstractFactory segmentationFactory, 
+            NeuralNetworkAbstractFactory neuralNetworkFactory, StructuringAbstractFactory structuringFactory)
+        {
+            Recognized = new List<Rectangle>();
+            NotRecognized = new List<Rectangle>();
+            CanNotBeRecognized = new List<Rectangle>();
+            segmentation = segmentationFactory;
+            neuralNetwork = neuralNetworkFactory;
+            structuring = structuringFactory;
+        }
+        public void Recognize(Rectangle rectangle)
+        {
+            NotRecognized.Add(rectangle);
+
+            while (NotRecognized.Count > 0)
+            {
+                NotRecognized = MakeSegmentation(NotRecognized);
+
+                neuralNetwork.RecognizeList(NotRecognized);
+                
+                NotRecognized.Clear();
+
+                foreach (Rectangle rect in neuralNetwork.Recognized)
+                    WhenRecognized(rect);
+
+                foreach (Rectangle rect in neuralNetwork.NotRecognized)
+                    NotRecognized = SumLists(NotRecognized, WhenIsNotRecognized(rect));
+
+                neuralNetwork.Recognized.Clear();
+                neuralNetwork.NotRecognized.Clear();
+            }
+
+            structuring.Run(Recognized);
+        }
+        public List<Rectangle> MakeSegmentation(List<Rectangle> rectangles)
+        {
+            List<Rectangle> notRecognized = new List<Rectangle>();
+
+            foreach (Rectangle rect in rectangles)
+                notRecognized = SumLists(notRecognized, segmentation.MakeSegmentation(rect));
+
+            return notRecognized;
+        }
+        public void WhenRecognized(Rectangle rectangle)
+        {
+            Recognized.Add(rectangle);
+        }
+        public List<Rectangle> WhenIsNotRecognized(Rectangle rectangle)
+        {
+            List<Rectangle> notRecognized = new List<Rectangle>();
+
+            if (!segmentation.IsSeparableByLines(rectangle))
+            {
+                if (segmentation.IsSeparableByWave(rectangle))
+                {
+                    List<Rectangle> partsFromWave = segmentation.WaveSegmentation(rectangle);
+                    foreach (Rectangle pfw in partsFromWave)
+                        notRecognized.Add(pfw);
+                }
+                else
+                    CanNotBeRecognized.Add(rectangle);
+            }
+            else
+                CanNotBeRecognized.Add(rectangle);
+            return notRecognized;
+        }
+        private List<Rectangle> SumLists(List<Rectangle> a, List<Rectangle> b)
+        {
+            List<Rectangle> s = new List<Rectangle>();
+            foreach (Rectangle rect in a)
+                s.Add(rect);
+            foreach (Rectangle rect in b)
+                s.Add(rect);
+            return s;
+        }
+    }
+}
