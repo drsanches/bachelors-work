@@ -27,19 +27,18 @@ namespace MathRecognition
         private const string PYTHON_SCRIPT_NAME = "runnable_cnn.py";
         private const string TEMP_DIRECTORY_PATH = "..\\..\\..\\..\\temp\\";
 
-        public NeuralNetwork()
-            : base()
+        public NeuralNetwork() : base()
         { }
         public override void RecognizeList(List<Rectangle> notRecognized)
         {
             foreach (Rectangle rect in notRecognized)
             {
                 //For normal work
-                string arrayPath = CreateArrayFile(rect, TEMP_DIRECTORY_PATH);
-                string result = RecognizeOne(rect, arrayPath);
+                string arrayPath = createArrayFile(rect, TEMP_DIRECTORY_PATH);
+                string result = recognizeOne(rect, arrayPath);
 
                 //For debug
-                //string result = RecognizeOne(rectangle, "..\\..\\..\\..\\cnn\\tools\\1.txt");
+                //string result = recognizeOne(rectangle, "..\\..\\..\\..\\cnn\\tools\\1.txt");
 
                 if (result.Equals("Error"))
                     NotRecognized.Add(rect);
@@ -50,11 +49,10 @@ namespace MathRecognition
                     Recognized.Add(newRectangle);
                 }
 
-                DeleteArrayFile(arrayPath);
+                deleteArrayFile(arrayPath);
             }
         }
-
-        protected string CreateArrayFile(Rectangle rectangle, string tempDirectoryPath)
+        private string createArrayFile(Rectangle rectangle, string tempDirectoryPath)
         {
             string arrayPath = tempDirectoryPath + Guid.NewGuid().ToString() + ".txt";
 
@@ -69,7 +67,7 @@ namespace MathRecognition
             }
             return arrayPath;
         }
-        protected string RecognizeOne(Rectangle rect, string arrayPath)
+        private string recognizeOne(Rectangle rect, string arrayPath)
         {
             Process p = new Process(); 
             p.StartInfo.FileName = "python.exe";
@@ -86,7 +84,7 @@ namespace MathRecognition
 
             return results[0];
         }
-        protected void DeleteArrayFile(string filepath)
+        private void deleteArrayFile(string filepath)
         {
             File.Delete(filepath);
         }

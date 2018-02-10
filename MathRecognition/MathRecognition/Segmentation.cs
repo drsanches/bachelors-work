@@ -21,17 +21,16 @@ namespace MathRecognition
     //TODO: cuts a little from below
     public class Segmentation : SegmentationAbstractFactory
     {
-        public Segmentation() 
-            : base()
+        public Segmentation() : base()
         { }
         public override List<Rectangle> MakeSegmentation(Rectangle rectangle)
         {
-            Rectangle newRectangle = FindFormula(rectangle);
-            List<Rectangle> newRectangles = CutByLines(newRectangle, VerticalLines(newRectangle), HorizontalLines(newRectangle));
+            Rectangle newRectangle = findFormula(rectangle);
+            List<Rectangle> newRectangles = cutByLines(newRectangle, verticalLines(newRectangle), horizontalLines(newRectangle));
 
             for (int i = newRectangles.Count - 1; i >= 0 ; i--)
             {
-                newRectangle = FindFormula(newRectangles[i]);
+                newRectangle = findFormula(newRectangles[i]);
                 newRectangles.RemoveAt(i);
                 newRectangles.Add(newRectangle);
             }
@@ -48,7 +47,7 @@ namespace MathRecognition
                 {
                     if (rectangle.Array[i, j] > 0)
                     {
-                        int[,] a = Wave(rectangle, i, j);
+                        int[,] a = wave(rectangle, i, j);
 
                         Rectangle r = new Rectangle(rectangle.TopLeftX, rectangle.TopLeftY, rectangle.Width, rectangle.Height, a, 0, 0);
                         partsOfRectangles.Add(r);
@@ -70,7 +69,7 @@ namespace MathRecognition
         }
         public override bool IsSeparableByLines(Rectangle rectangle)
         {
-            return (VerticalLines(rectangle).Count > 2) && (HorizontalLines(rectangle).Count > 2);
+            return (verticalLines(rectangle).Count > 2) && (horizontalLines(rectangle).Count > 2);
         }
         public override bool IsSeparableByWave(Rectangle rectangle)
         {
@@ -80,8 +79,7 @@ namespace MathRecognition
             else
                 return false;
         }
-
-        protected Rectangle FindFormula(Rectangle rectangle)
+        private Rectangle findFormula(Rectangle rectangle)
         {
             int x1 = rectangle.Width - 1;
             int y1 = rectangle.Height - 1;
@@ -131,7 +129,7 @@ namespace MathRecognition
             return new Rectangle(rectangle.TopLeftX + x1, rectangle.TopLeftY + y1, 
                                  x2 - x1 + 1, y2 - y1 + 1, rectangle.Array, x1, y1);
         }
-        protected List<int> HorizontalLines(Rectangle rectangle)
+        private List<int> horizontalLines(Rectangle rectangle)
         {
             List<int> lines = new List<int>();
 
@@ -163,7 +161,7 @@ namespace MathRecognition
             lines.Add(rectangle.Height);
             return lines;
         }
-        protected List<int> VerticalLines(Rectangle rectangle)
+        private List<int> verticalLines(Rectangle rectangle)
         {
             List<int> lines = new List<int>();
 
@@ -195,7 +193,7 @@ namespace MathRecognition
             lines.Add(rectangle.Width);
             return lines;
         }
-        protected List<Rectangle> CutByLines(Rectangle rectangle, List<int> verticalLines, List<int> horizontalLines)
+        private List<Rectangle> cutByLines(Rectangle rectangle, List<int> verticalLines, List<int> horizontalLines)
         {
             int v = verticalLines.Count() - 1;
             int h = horizontalLines.Count() - 1;
@@ -212,21 +210,21 @@ namespace MathRecognition
                                                 topLeftX - rectangle.TopLeftX, topLeftY - rectangle.TopLeftY));
             }
 
-            DeleteEmptyRectangles(newRectangles);
+            deleteEmptyRectangles(newRectangles);
 
             return newRectangles;
         }
-        protected void DeleteEmptyRectangles(List<Rectangle> rectangles)
+        private void deleteEmptyRectangles(List<Rectangle> rectangles)
         {
             for (int i = rectangles.Count - 1; i >= 0; i--)
                 if (rectangles[i].IsZero())
                     rectangles.RemoveAt(i);
         }
-        protected int[,] Wave(Rectangle rect, int x1, int y1)
+        private int[,] wave(Rectangle rect, int x1, int y1)
         {
             int[,] a = (int[,])rect.Array.Clone();
 
-            //PrintArray(new Rectangle(rectangle.TopLeftX, rectangle.TopLeftY, rectangle.X2, rectangle.Y2, Array, rectangle.TopLeftX, rectangle.TopLeftY));
+            //printArray(new Rectangle(rectangle.TopLeftX, rectangle.TopLeftY, rectangle.X2, rectangle.Y2, Array, rectangle.TopLeftX, rectangle.TopLeftY));
             
             int k = 2;
             a[x1, y1] = k;
@@ -255,7 +253,7 @@ namespace MathRecognition
                     }
             }
 
-            //PrintArray(new Rectangle(rectangle.TopLeftX, rectangle.TopLeftY, rectangle.X2, rectangle.Y2, Array, rectangle.TopLeftX, rectangle.TopLeftY));
+            //printArray(new Rectangle(rectangle.TopLeftX, rectangle.TopLeftY, rectangle.X2, rectangle.Y2, Array, rectangle.TopLeftX, rectangle.TopLeftY));
 
             for (int i = 0; i < rect.Width; i++)
             for (int j = 0; j < rect.Height; j++)
@@ -264,13 +262,12 @@ namespace MathRecognition
                 else 
                     a[i, j] = 0;
 
-            //PrintArray(new Rectangle(rectangle.TopLeftX, rectangle.TopLeftY, rectangle.X2, rectangle.Y2, Array, rectangle.TopLeftX, rectangle.TopLeftY));
+            //printArray(new Rectangle(rectangle.TopLeftX, rectangle.TopLeftY, rectangle.X2, rectangle.Y2, Array, rectangle.TopLeftX, rectangle.TopLeftY));
             
             return a;
         }
-        
         // For Debug
-        private void PrintArray(Rectangle rect)
+        private void printArray(Rectangle rect)
         {
             string s = "";
             for (int i = rect.Width - 1; i >= 0; i--)

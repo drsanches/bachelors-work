@@ -17,7 +17,6 @@ namespace MathRecognition
         Graphics g;
         public Recognizer recognizer;
 
-
         public Form1()
         {
             InitializeComponent();
@@ -35,11 +34,11 @@ namespace MathRecognition
 
             Segmentation segmentation = new Segmentation();
             NeuralNetwork cnn = new NeuralNetwork();
-            Structuring structuring = new Structuring();
+            Structuring structuring = new Structuring(StructuringDelegateCreator.CreateDelegate());
+            
             recognizer = new Recognizer(segmentation, cnn, structuring);
             recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));
         }
-
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawImage(bitmap, 0, 0);
@@ -67,7 +66,6 @@ namespace MathRecognition
                 e.Graphics.DrawString(r.label, new Font("Arial", 16), new SolidBrush(Color.Red), r.TopLeftX, r.TopLeftY);
             }
         }
-
         private void Form1_Activated(object sender, EventArgs e)
         {
             Refresh();

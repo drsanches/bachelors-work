@@ -32,17 +32,17 @@ namespace MathRecognition
 
             while (NotRecognized.Count > 0)
             {
-                NotRecognized = MakeSegmentation(NotRecognized);
+                NotRecognized = makeSegmentation(NotRecognized);
 
                 neuralNetwork.RecognizeList(NotRecognized);
                 
                 NotRecognized.Clear();
 
                 foreach (Rectangle rect in neuralNetwork.Recognized)
-                    WhenRecognized(rect);
+                    whenRecognized(rect);
 
                 foreach (Rectangle rect in neuralNetwork.NotRecognized)
-                    NotRecognized = SumLists(NotRecognized, WhenIsNotRecognized(rect));
+                    NotRecognized = sumLists(NotRecognized, whenIsNotRecognized(rect));
 
                 neuralNetwork.Recognized.Clear();
                 neuralNetwork.NotRecognized.Clear();
@@ -50,20 +50,20 @@ namespace MathRecognition
 
             structuring.Run(Recognized);
         }
-        private List<Rectangle> MakeSegmentation(List<Rectangle> rectangles)
+        private List<Rectangle> makeSegmentation(List<Rectangle> rectangles)
         {
             List<Rectangle> notRecognized = new List<Rectangle>();
 
             foreach (Rectangle rect in rectangles)
-                notRecognized = SumLists(notRecognized, segmentation.MakeSegmentation(rect));
+                notRecognized = sumLists(notRecognized, segmentation.MakeSegmentation(rect));
 
             return notRecognized;
         }
-        private void WhenRecognized(Rectangle rectangle)
+        private void whenRecognized(Rectangle rectangle)
         {
             Recognized.Add(rectangle);
         }
-        private List<Rectangle> WhenIsNotRecognized(Rectangle rectangle)
+        private List<Rectangle> whenIsNotRecognized(Rectangle rectangle)
         {
             List<Rectangle> notRecognized = new List<Rectangle>();
 
@@ -82,7 +82,7 @@ namespace MathRecognition
                 CanNotBeRecognized.Add(rectangle);
             return notRecognized;
         }
-        private List<Rectangle> SumLists(List<Rectangle> a, List<Rectangle> b)
+        private List<Rectangle> sumLists(List<Rectangle> a, List<Rectangle> b)
         {
             List<Rectangle> s = new List<Rectangle>();
             foreach (Rectangle rect in a)
