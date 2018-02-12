@@ -31,6 +31,8 @@ namespace MathRecognition
             foreach (Rectangle rect in rectangles)
                 addInBaselines(rect);
 
+            int mainBaselineIndex = findMainBaseline();
+
             structuringDelegate.Invoke(ref baselines);
         }
         private void addInBaselines(Rectangle rectangle)
@@ -67,6 +69,28 @@ namespace MathRecognition
                 return true;
             else
                 return false;
+        }
+        private int findMainBaseline()
+        {
+            int index = -1;
+            double maxCoefficient = 0;
+            
+            for (int i = 0; i < baselines.Count; i++)
+                if (getAverageHeightCoefficient(baselines[i]) > maxCoefficient)
+                { 
+                    maxCoefficient = getAverageHeightCoefficient(baselines[i]);
+                    index = i;
+                }
+
+            return index;
+        }
+        private double getAverageHeightCoefficient(List<Symbol> symbols)
+        {
+            double sum = 0;
+            foreach (Symbol symbol in symbols)
+                sum += symbol.HeightCoefficient;
+
+            return sum / symbols.Count;
         }
     }
 }

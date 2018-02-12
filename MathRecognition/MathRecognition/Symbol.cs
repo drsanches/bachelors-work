@@ -15,19 +15,21 @@ namespace MathRecognition
         public int Height;
         public int MainCentreX;
         public int MainCentreY;
+        public double HeightCoefficient;
         public Rectangle MainRectangle;
         public List<Symbol>[] Inside;
 
-        public Symbol(Rectangle rect, string symbolsFilename)
+        public Symbol(Rectangle rectangle, string symbolsFilename)
         {
-            TopLeftX = rect.TopLeftX;
-            TopLeftY = rect.TopLeftY;
-            Width = rect.Width;
-            Height = rect.Height;
-            MainRectangle = rect;
+            TopLeftX = rectangle.TopLeftX;
+            TopLeftY = rectangle.TopLeftY;
+            Width = rectangle.Width;
+            Height = rectangle.Height;
+            MainRectangle = rectangle;
             Inside = new List<Symbol>[5];
-            MainCentreX = rect.GetCentrePoint().X;
-            MainCentreY = rect.GetCentrePoint().Y + (int)(Height * getCenterYShift(rect.label, symbolsFilename));
+            MainCentreX = rectangle.GetCentrePoint().X;
+            MainCentreY = rectangle.GetCentrePoint().Y + (int)(Height * getCenterYShift(rectangle.label, symbolsFilename));
+            HeightCoefficient = Height / getRelativeHeignt(rectangle, symbolsFilename);
         }
         private double getCenterYShift(string label, string symbolsFilename)
         {
@@ -46,6 +48,29 @@ namespace MathRecognition
                 if (Array.IndexOf(symbols, label) != -1)
                     return k;
                 
+                element = element.Next;
+            }
+            return 0;
+        }
+        private int getRelativeHeignt(Rectangle rectangle, string symbolsFilename)
+        {
+            System.IO.StreamReader file = new System.IO.StreamReader(@symbolsFilename);
+            string jsonString = file.ReadToEnd();
+            file.Close();
+
+            JObject fileJObject = JObject.Parse(jsonString);
+            JToken element = fileJObject.GetValue("SymbolsHeights").First;
+            while (element != null)
+            {
+                JObject elementJObject = JObject.Parse(element.ToString());
+                string symbol = elementJObject.GetValue("Symbol").ToString();
+
+                if (symbol == rectangle.label)
+                {
+                    int relativeHeight = int.Parse(elementJObject.GetValue("Height").ToString());
+                    return relativeHeight;
+                }
+
                 element = element.Next;
             }
             return 0;

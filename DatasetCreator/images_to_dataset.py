@@ -33,11 +33,12 @@ X_test = []
 Y_test = []
 
 f = open(filename, 'r')
-symbols = json.load(f)
+symbols_json = json.load(f)
 f.close()
-symbols = symbols["Symbols"]
+symbols = symbols_json["Symbols"]
 symbols = symbols.split(" ")
 
+symbols_heights = []
 count = 0
 for symbol in symbols:
     # Loading and initial transformation
@@ -45,6 +46,12 @@ for symbol in symbols:
     image = image.convert('L')
     image = array_functions.image_diagonal_mapping(image)
     image = array_functions.cut_symbol(image)
+
+    symbol_height = {}
+    symbol_height["Symbol"] = symbol
+    symbol_height["Height"] = image.height
+    symbols_heights.append(symbol_height)
+
     image = array_functions.input_image_scaling(image, (input_width, input_height), "White")
 
     # Normal
@@ -103,9 +110,15 @@ Y_train = np_utils.to_categorical(Y_train, count)
 X_test = numpy.array(X_test).astype('float32')
 Y_test = np_utils.to_categorical(Y_test, count)
 
+symbols_json["SymbolsHeights"] = symbols_heights
+f = open(filename, 'w')
+json.dump(symbols_json, f)
+f.close
+
 print(X_train.shape)
 print(Y_train.shape)
 print(X_test.shape)
 print(Y_test.shape)
+print(symbols_json)
 
 numpy.savez(output_filename, X_train=X_train, Y_train=Y_train, X_test=X_test, Y_test=Y_test)
