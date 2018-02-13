@@ -21,10 +21,12 @@ input_height = 50
 try:
     filename = sys.argv[1]
     images_directory = sys.argv[2]
-    output_filename = sys.argv[3]
+    images_number = int(sys.argv[3])
+    output_filename = sys.argv[4]
 except:
     filename = "..\dataset\symbols.json"
     images_directory = "..\dataset\images"
+    images_number = 5
     output_filename = "..\dataset\dataset.npz"
 
 X_train = []
@@ -41,69 +43,73 @@ symbols = symbols.split(" ")
 symbols_heights = []
 count = 0
 for symbol in symbols:
-    # Loading and initial transformation
-    image = Image.open(images_directory + "\\" + str(count) + ".png")
-    image = image.convert('L')
-    image = array_functions.image_diagonal_mapping(image)
-    image = array_functions.cut_symbol(image)
+    heights_sum = 0
+    for image_count in range(0, images_number):
+        # Loading and initial transformation
+        image = Image.open(images_directory + "\\" + str(count) + "-" + str(image_count) + ".png")
+        image = image.convert('L')
+        image = array_functions.image_diagonal_mapping(image)
+        image = array_functions.cut_symbol(image)
+
+        heights_sum += image.height
+
+        image = array_functions.input_image_scaling(image, (input_width, input_height), "White")
+
+        # Normal
+        array = get_final_array(image)
+        X_train.append(array)
+        Y_train.append(count)
+
+        # Rotated
+        array = get_final_array(array_functions.rotate(image, 3))
+        X_train.append(array)
+        Y_train.append(count)
+        array = get_final_array(array_functions.rotate(image, -3))
+        X_train.append(array)
+        Y_train.append(count)
+        array = get_final_array(array_functions.rotate(image, 5))
+        X_train.append(array)
+        Y_train.append(count)
+        array = get_final_array(array_functions.rotate(image, -5))
+        X_train.append(array)
+        Y_train.append(count)
+
+        # Noise
+        array = get_final_array(array_functions.random_dots(image, 20))
+        X_train.append(array)
+        Y_train.append(count)
+        array = get_final_array(array_functions.random_dots(image, 50))
+        X_train.append(array)
+        Y_train.append(count)
+
+        # Scaling
+        array = get_final_array(array_functions.scaling(image, (0.8, 0.8)))
+        X_train.append(array)
+        Y_train.append(count)
+        array = get_final_array(array_functions.scaling(image, (1.2, 1.2)))
+        X_train.append(array)
+        Y_train.append(count)
+
+        # Deformation
+        array = get_final_array(array_functions.deformation(image, (1, 0.8), "White"))
+        X_train.append(array)
+        Y_train.append(count)
+        array = get_final_array(array_functions.deformation(image, (0.8, 1), "White"))
+        X_train.append(array)
+        Y_train.append(count)
+
+        # Noise for test
+        array = get_final_array(array_functions.random_dots(image, 50))
+        X_test.append(array)
+        Y_test.append(count)
 
     symbol_height = {}
     symbol_height["Symbol"] = symbol
-    symbol_height["Height"] = image.height
+    symbol_height["Height"] = int(heights_sum / image_count)
     symbols_heights.append(symbol_height)
 
-    image = array_functions.input_image_scaling(image, (input_width, input_height), "White")
-
-    # Normal
-    array = get_final_array(image)
-    X_train.append(array)
-    Y_train.append(count)
-
-    # Rotated
-    array = get_final_array(array_functions.rotate(image, 3))
-    X_train.append(array)
-    Y_train.append(count)
-    array = get_final_array(array_functions.rotate(image, -3))
-    X_train.append(array)
-    Y_train.append(count)
-    array = get_final_array(array_functions.rotate(image, 5))
-    X_train.append(array)
-    Y_train.append(count)
-    array = get_final_array(array_functions.rotate(image, -5))
-    X_train.append(array)
-    Y_train.append(count)
-
-    # Noise
-    array = get_final_array(array_functions.random_dots(image, 20))
-    X_train.append(array)
-    Y_train.append(count)
-    array = get_final_array(array_functions.random_dots(image, 50))
-    X_train.append(array)
-    Y_train.append(count)
-
-    # Scaling
-    array = get_final_array(array_functions.scaling(image, (0.8, 0.8)))
-    X_train.append(array)
-    Y_train.append(count)
-    array = get_final_array(array_functions.scaling(image, (1.2, 1.2)))
-    X_train.append(array)
-    Y_train.append(count)
-
-    # Deformation
-    array = get_final_array(array_functions.deformation(image, (1, 0.8), "White"))
-    X_train.append(array)
-    Y_train.append(count)
-    array = get_final_array(array_functions.deformation(image, (0.8, 1), "White"))
-    X_train.append(array)
-    Y_train.append(count)
-
-    # Noise for test
-    array = get_final_array(array_functions.random_dots(image, 50))
-    X_test.append(array)
-    Y_test.append(count)
-
     print(str(count) + ": " + symbol)
-    count = count + 1
+    count += 1
 
 X_train = numpy.array(X_train).astype('float32')
 Y_train = np_utils.to_categorical(Y_train, count)
