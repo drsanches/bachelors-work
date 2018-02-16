@@ -17,7 +17,7 @@ namespace MathRecognition
         public int MainCentreY;
         public double HeightCoefficient;
         public Rectangle MainRectangle;
-        public List<Symbol>[] Inside;
+        public List<List<Symbol>>[] Baselines;
 
         public Symbol(Rectangle rectangle, string symbolsFilename)
         {
@@ -26,10 +26,10 @@ namespace MathRecognition
             Width = rectangle.Width;
             Height = rectangle.Height;
             MainRectangle = rectangle;
-            Inside = new List<Symbol>[5];
+            Baselines = new List<List<Symbol>>[5];
             MainCentreX = rectangle.GetCentrePoint().X;
             MainCentreY = rectangle.GetCentrePoint().Y + (int)(Height * getCenterYShift(rectangle.label, symbolsFilename));
-            HeightCoefficient = Height / getRelativeHeignt(rectangle, symbolsFilename);
+            HeightCoefficient = Height / (double)getRelativeHeignt(rectangle, symbolsFilename);
         }
         private double getCenterYShift(string label, string symbolsFilename)
         {
