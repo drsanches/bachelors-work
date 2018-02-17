@@ -12,10 +12,11 @@ namespace MathRecognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\Structuring.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\Structuring3.png";
         Bitmap bitmap;
         Graphics g;
-        public Recognizer recognizer;
+        Recognizer recognizer;
+        string LatexCode = "";
 
         public Form1()
         {
@@ -37,13 +38,18 @@ namespace MathRecognition
             Structuring structuring = new Structuring(StructuringDelegateCreator.CreateDelegate());
             
             recognizer = new Recognizer(segmentation, cnn, structuring);
-            recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));
+            LatexCode = recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));
         }
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawImage(bitmap, 0, 0);
-            this.Height = bitmap.Height + 30;
+
+            textBox1.SetBounds(0, bitmap.Height, bitmap.Width, textBox1.Height);
+            textBox1.Text = LatexCode;
+
+            this.Height = bitmap.Height + 30 + textBox1.Height;
             this.Width = bitmap.Width + 5;
+            
 
             foreach (Rectangle r in recognizer.Recognized)
             {

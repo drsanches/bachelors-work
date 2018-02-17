@@ -10,7 +10,7 @@ namespace MathRecognition
     {
         public StructuringAbstractFactory()
         { }
-        public abstract void Run(List<Rectangle> rectangles);
+        public abstract string getLatexCode(List<Rectangle> rectangles);
     }
     
     public class Structuring : StructuringAbstractFactory
@@ -23,18 +23,28 @@ namespace MathRecognition
         {
             structuringDelegate = structDel;
         }
-        public override void Run(List<Rectangle> rectangles)
+        public override string getLatexCode(List<Rectangle> rectangles)
         {
             List<List<Symbol>> allBaselines = new List<List<Symbol>>();
 
             foreach (Rectangle rect in rectangles)
                 addInBaselines(ref allBaselines, rect);
 
+            sortBaselines(ref allBaselines);
+
             //structuringDelegate.Invoke(ref baselines);
 
             runStructuring(ref allBaselines);
 
-            string latexCode = getLatexCode(allBaselines[0]);
+            string latexCode = getBaselineLatexCode(allBaselines[0]);
+            
+            return latexCode;
+        }
+        private void sortBaselines(ref List<List<Symbol>> baselines)
+        { 
+            foreach (List<Symbol> baseline in baselines)
+                baseline.Sort((a, b) => a.TopLeftX.CompareTo(b.TopLeftX));
+            baselines.Sort((a, b) => a[0].TopLeftX.CompareTo(b[0].TopLeftX));
         }
         private void addInBaselines(ref List<List<Symbol>> baselines, Rectangle rectangle)
         {
@@ -60,30 +70,6 @@ namespace MathRecognition
                 baselines.Add(new List<Symbol>());
                 baselines.Last().Add(newSymbol);
             }
-        }
-        private bool isAtOneLine(Symbol s1, Symbol s2)
-        {
-            int maxHeight = Math.Max(s1.Height, s2.Height);
-            int y1 = s1.MainCentreY;
-            int y2 = s2.MainCentreY;
-            if ((y1 < y2 + maxHeight * CENTRE_DISPLACEMENT_COEFFICIENT) && (y1 > y2 - maxHeight * CENTRE_DISPLACEMENT_COEFFICIENT))
-                return true;
-            else
-                return false;
-        }
-        private int findMainBaselineIndex(List<List<Symbol>> baselines)
-        {
-            int index = -1;
-            double maxCoefficient = 0;
-            
-            for (int i = 0; i < baselines.Count; i++)
-                if (getAverageHeightCoefficient(baselines[i]) > maxCoefficient)
-                { 
-                    maxCoefficient = getAverageHeightCoefficient(baselines[i]);
-                    index = i;
-                }
-
-            return index;
         }
         private double getAverageHeightCoefficient(List<Symbol> symbols)
         {
@@ -111,15 +97,36 @@ namespace MathRecognition
                 baselines[0].Add(newSymbol);
             }
 
-            //TODO: SORT
-            baselines[0].Sort((a, b) => a.TopLeftX.CompareTo(b.TopLeftX));
-
             foreach (Symbol symbol in baselines[0])
                 for (int i = 0; i < symbol.Baselines.Count(); i++)
                     if (symbol.Baselines[i] != null)
                         if (symbol.Baselines[i].Count > 1)
                             runStructuring(ref symbol.Baselines[i]);
         }
+        private int findMainBaselineIndex(List<List<Symbol>> baselines)
+        {
+            int index = -1;
+            double maxCoefficient = 0;
+            
+            for (int i = 0; i < baselines.Count; i++)
+                if (getAverageHeightCoefficient(baselines[i]) > maxCoefficient)
+                { 
+                    maxCoefficient = getAverageHeightCoefficient(baselines[i]);
+                    index = i;
+                }
+
+            return index;
+        }
+        private bool isAtOneLine(Symbol s1, Symbol s2)
+        {
+            int maxHeight = Math.Max(s1.Height, s2.Height);
+            int y1 = s1.MainCentreY;
+            int y2 = s2.MainCentreY;
+            if ((y1 < y2 + maxHeight * CENTRE_DISPLACEMENT_COEFFICIENT) && (y1 > y2 - maxHeight * CENTRE_DISPLACEMENT_COEFFICIENT))
+                return true;
+            else
+                return false;
+        }        
         private Dictionary<Symbol, List<List<Symbol>>> getSplittedIntoGroupsBaselines(List<List<Symbol>> baselines, List<Symbol> mainBaseline)
         {
             List<List<Symbol>> newBaselines = baselines;
@@ -387,8 +394,7 @@ namespace MathRecognition
 
             return projection;
         }
-
-        private string getLatexCode(List<Symbol> baseline)
+        private string getBaselineLatexCode(List<Symbol> baseline)
         {
             string latexCode = "{";
 
@@ -416,8 +422,8 @@ namespace MathRecognition
                             break;
                     }
 
-                    if (symbol.Baselines[1] != null)
-                        latexCode += getLatexCode(symbol.Baselines[1][0]);
+                    if (symbol.Baselines[i] != null)
+                        latexCode += getBaselineLatexCode(symbol.Baselines[i][0]);
                 }
 
             return latexCode;

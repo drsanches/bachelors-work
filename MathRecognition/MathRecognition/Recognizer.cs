@@ -26,7 +26,7 @@ namespace MathRecognition
             neuralNetwork = neuralNetworkFactory;
             structuring = structuringFactory;
         }
-        public void Recognize(Rectangle rectangle)
+        public string Recognize(Rectangle rectangle)
         {
             NotRecognized.Add(rectangle);
 
@@ -48,7 +48,9 @@ namespace MathRecognition
                 neuralNetwork.NotRecognized.Clear();
             }
 
-            structuring.Run(Recognized);
+            string latexCode = structuring.getLatexCode(Recognized);
+
+            return latexCode;
         }
         private List<Rectangle> makeSegmentation(List<Rectangle> rectangles)
         {
