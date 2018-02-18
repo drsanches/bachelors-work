@@ -14,20 +14,20 @@ def get_final_array(image):
     array = 1 - array / 255
     return array
 
-
-input_width = 50
-input_height = 50
-
 try:
     filename = sys.argv[1]
     images_directory = sys.argv[2]
-    images_number = int(sys.argv[3])
-    output_filename = sys.argv[4]
+    fonts_number = int(sys.argv[3])
+    input_width = int(sys.argv[4])
+    input_height = int(sys.argv[5])
+    output_filename = sys.argv[6]
 except:
     filename = "..\dataset\symbols.json"
     images_directory = "..\dataset\images"
-    images_number = 5
-    output_filename = "..\dataset\dataset.npz"
+    fonts_number = 5
+    input_width = 32
+    input_height = 32
+    output_filename = "..\dataset\dataset-32x32.npz"
 
 X_train = []
 Y_train = []
@@ -44,7 +44,7 @@ symbols_heights = []
 count = 0
 for symbol in symbols:
     heights_sum = 0
-    for image_count in range(0, images_number):
+    for image_count in range(0, fonts_number):
         # Loading and initial transformation
         image = Image.open(images_directory + "\\" + str(count) + "-" + str(image_count) + ".png")
         image = image.convert('L')

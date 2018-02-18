@@ -6,8 +6,8 @@ import numpy
 
 
 filename = "..\\dataset\\symbols.json"
-input_width = 50
-input_height = 50
+input_width = 32
+input_height = 32
 
 try:
     try:
@@ -24,27 +24,23 @@ try:
 
     input = array_functions.read_array_from_file(array_path)
     input = array_functions.input_array_scaling(input, (input_width, input_height), "Black")
-
-    # Debug
-    # array_functions.array_to_image(input).show()
-
     input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
 
     # Debug
-    # data = numpy.load("..\\dataset\\dataset.npz")
-    # num = 57
+    # data = numpy.load("..\\dataset\\dataset-32x32.npz")
+    # num = 310
     # input = data["X_test"][num]
     # print(data["Y_test"][num])
     # array_functions.array_to_image(input).show()
     # input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
 
-    json_file = open(script_directory_path + "cnn_data\\cnn9.json", "r")
+    json_file = open(script_directory_path + "cnn_data\\cnn11.json", "r")
     loaded_model_json = json_file.read()
     json_file.close()
     model = model_from_json(loaded_model_json)
-    model.load_weights(script_directory_path + "cnn_data\\cnn9.h5")
+    model.load_weights(script_directory_path + "cnn_data\\cnn11.h5")
 
     model.compile(loss="categorical_crossentropy",
             optimizer="adam",
@@ -52,17 +48,23 @@ try:
 
 
     # Debug
-    # x1 = data["X_test"][num].reshape(1, 50, 50, 1)
-    # y1 = data["Y_test"][num].reshape(1, 64)
-    # print(x1.shape)
-    # print(y1.shape)
-    # scores = model.evaluate(x1, y1, verbose=1)
-    # print("Точность работы на тестовых данных: %.2f%%" % (scores[1]*100))
+    # data = numpy.load("..\\dataset\\dataset-50x50.npz")
+    # X_test = data["X_test"]
+    # Y_test = data["Y_test"]
+    # for i in range(0, len(data["X_test"])):
+    #     x1 = X_test[i].reshape(1, X_test.shape[1], X_test.shape[2], 1)
+    #     y1 = Y_test[i].reshape(1, Y_test.shape[1])
+    #     scores = model.evaluate(x1, y1, verbose=0)
+    #     print(str(i) + " - %.2f%%" % (scores[1]*100))
+
 
     result = model.predict_on_batch(input)
 
+
     # Debug
     # print(result)
+    # print(result.max())
+
 
     label = label_functions.label_creator(result, script_directory_path + filename)
 except:

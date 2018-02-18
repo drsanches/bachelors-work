@@ -59,14 +59,14 @@ def image_to_array(image):
             array[i, j] = image.getpixel((i, j)) / 255
     return array
 
-def input_image_scaling(image, input_size, color):
+def input_image_scaling(image, input_size, background_color):
     k_width = input_size[0] / image.width
     k_height = input_size[1] / image.height
     k = min(k_width, k_height)
     new_width = int(image.width * k)
     new_height = int(image.height * k)
     resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
-    final_image = Image.new('L', (input_size[0], input_size[1]), color)
+    final_image = Image.new('L', (input_size[0], input_size[1]), background_color)
     x1 = int(input_size[0] / 2 - new_width / 2)
     y1 = int(input_size[1] / 2 - new_height / 2)
     x2 = int(input_size[0] / 2 + new_width / 2)
@@ -74,9 +74,9 @@ def input_image_scaling(image, input_size, color):
     final_image.paste(resized_image, (x1, y1, x2, y2))
     return final_image
 
-def input_array_scaling(array, input_size, color):
+def input_array_scaling(array, input_size, background_color):
     image = array_to_image(array)
-    image = input_image_scaling(image, input_size, color)
+    image = input_image_scaling(image, input_size, background_color)
     new_array = image_to_array(image)
     return new_array
 
@@ -158,8 +158,8 @@ def scaling(image, size):
     new_image.paste(scaled_image, zero_point)
     return new_image
 
-def deformation(image, size, color):
+def deformation(image, size, background_color):
     new_image = scaling(image, size)
     new_image = cut_symbol(new_image)
-    new_image = input_image_scaling(new_image, (image.width, image.height), color)
+    new_image = input_image_scaling(new_image, (image.width, image.height), background_color)
     return new_image

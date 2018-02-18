@@ -10,12 +10,15 @@ package Main;
         import org.json.*;
 
 public class Main {
+    static final String SYMBOLS_FILENAME = "..\\dataset\\symbols.json";
+    static final String IMAGES_DIRECTORY = "..\\dataset\\images";
+    static final String OUTPUT_FILENAME = "..\\dataset\\dataset-32x32.npz";
+    static final String SCRIPT_FILENAME = "images_to_dataset.py";
+    static final int WIDTH = 32;
+    static final int HEIGHT = 32;
 
     public static void main(String[] args) {
-        final String SYMBOLS_FILENAME = "..\\dataset\\symbols.json";
-        final String IMAGES_DIRECTORY = "..\\dataset\\images";
-        final String OUTPUT_FILENAME = "..\\dataset\\dataset.npz";
-        final String SCRIPT_FILENAME = "images_to_dataset.py";
+
 
         ArrayList<String> fonts = getFontsList();
 
@@ -31,7 +34,7 @@ public class Main {
                 System.out.println(symbols[i]);
             }
 
-            imagesToDataset(SCRIPT_FILENAME, SYMBOLS_FILENAME, IMAGES_DIRECTORY, fonts.size(), OUTPUT_FILENAME);
+            imagesToDataset(SCRIPT_FILENAME, SYMBOLS_FILENAME, IMAGES_DIRECTORY, fonts.size(), WIDTH, HEIGHT, OUTPUT_FILENAME);
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -70,10 +73,11 @@ public class Main {
         teXFormula.createPNG(TeXConstants.STYLE_DISPLAY, 50, filename, Color.white, Color.black);
     }
 
-    private static void imagesToDataset(String scriptFilename, String filename,
-                                        String directory, int count, String outputFilename) throws Exception {
+    private static void imagesToDataset(String scriptFilename, String filename, String directory, int fontsCount,
+                                        int width, int height, String outputFilename) throws Exception {
         Process process = new ProcessBuilder()
-                .command("python.exe", scriptFilename, filename, directory, String.valueOf(count), outputFilename)
+                .command("python.exe", scriptFilename, filename, directory, String.valueOf(fontsCount),
+                        String.valueOf(width), String.valueOf(height), outputFilename)
                 .start();
         System.out.println(process.waitFor());
     }
