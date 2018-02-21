@@ -31,7 +31,6 @@ namespace MathRecognition
             string latexCode = getBaselineLatexCode(allBaselines[0]);
             return latexCode;
         }
-        
         private void runStructuring(ref List<List<Symbol>> baselines)
         {
             int mainBaselineIndex = Baselines.FindMainBaselineIndex(baselines);
@@ -56,7 +55,6 @@ namespace MathRecognition
                         if (symbol.Baselines[i].Count > 1)
                             runStructuring(ref symbol.Baselines[i]);
         }
-        
         private string getBaselineLatexCode(List<Symbol> baseline)
         {
             string latexCode = "{";
@@ -72,22 +70,27 @@ namespace MathRecognition
         {
             string latexCode = symbol.MainRectangle.label;
 
-            for (int i = 0; i < symbol.Baselines.Count(); i++)
-                if (symbol.Baselines[i] != null)
-                {
-                    switch (i)
-                    {
-                        case 1:
-                            latexCode += "^";
-                            break;
-                        case 3:
-                            latexCode += "_";
-                            break;
-                    }
-
+            if (symbol.MainRectangle.label == "\\frac")
+            {
+                latexCode += getBaselineLatexCode(symbol.Baselines[0][0]) + getBaselineLatexCode(symbol.Baselines[4][0]);
+            }
+            else
+                for (int i = 0; i < symbol.Baselines.Count(); i++)
                     if (symbol.Baselines[i] != null)
-                        latexCode += getBaselineLatexCode(symbol.Baselines[i][0]);
-                }
+                    {
+                        switch (i)
+                        {
+                            case 1:
+                                latexCode += "^";
+                                break;
+                            case 3:
+                                latexCode += "_";
+                                break;
+                        }
+
+                        if (symbol.Baselines[i] != null)
+                            latexCode += getBaselineLatexCode(symbol.Baselines[i][0]);
+                    }
 
             return latexCode;
         }

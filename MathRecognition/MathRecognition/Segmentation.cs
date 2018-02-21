@@ -69,7 +69,7 @@ namespace MathRecognition
         }
         public override bool IsSeparableByLines(Rectangle rectangle)
         {
-            return (verticalLines(rectangle).Count > 2) && (horizontalLines(rectangle).Count > 2);
+            return (verticalLines(rectangle).Count > 2) || (horizontalLines(rectangle).Count > 2);
         }
         public override bool IsSeparableByWave(Rectangle rectangle)
         {

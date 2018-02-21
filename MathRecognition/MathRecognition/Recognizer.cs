@@ -79,7 +79,7 @@ namespace MathRecognition
                     CanNotBeRecognized.Add(rectangle);
             }
             else
-                CanNotBeRecognized.Add(rectangle);
+                NotRecognized.Add(rectangle);
             return notRecognized;
         }
         private List<Rectangle> sumLists(List<Rectangle> a, List<Rectangle> b)

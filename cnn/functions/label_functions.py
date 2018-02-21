@@ -4,7 +4,7 @@ def label_creator(cnn_out, filename):
     cnn_out = cnn_out[0]
     index = cnn_out.argmax()
 
-    if float(cnn_out[index]) < 0.9:
+    if float(cnn_out[index]) < 0.95:
         return "Error"
     else:
         f = open(filename, 'r')
@@ -13,3 +13,4 @@ def label_creator(cnn_out, filename):
         symbols = symbols["Symbols"]
         symbols = symbols.split(" ")
         return symbols[index]
+        # return cnn_out[index]

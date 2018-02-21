@@ -63,8 +63,8 @@ def input_image_scaling(image, input_size, background_color):
     k_width = input_size[0] / image.width
     k_height = input_size[1] / image.height
     k = min(k_width, k_height)
-    new_width = int(image.width * k)
-    new_height = int(image.height * k)
+    new_width = max(int(image.width * k), 2)
+    new_height = max(int(image.height * k), 2)
     resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
     final_image = Image.new('L', (input_size[0], input_size[1]), background_color)
     x1 = int(input_size[0] / 2 - new_width / 2)

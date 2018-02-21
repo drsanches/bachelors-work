@@ -53,6 +53,29 @@ namespace MathRecognition
                 baselines.Last().Add(newSymbol);
             }
         }
+        public static void AddInBaselines(ref List<List<Symbol>> baselines, Symbol symbol, string symbolsFilename)
+        {
+            bool isAdded = false;
+            for (int line = 0; line < baselines.Count; line++)
+            {
+                foreach (Symbol element in baselines[line])
+                    if (isAtOneLine(element, symbol))
+                    {
+                        baselines[line].Add(symbol);
+                        isAdded = true;
+                        break;
+                    }
+
+                if (isAdded)
+                    break;
+            }
+
+            if (!isAdded)
+            {
+                baselines.Add(new List<Symbol>());
+                baselines.Last().Add(symbol);
+            }
+        }
         private static bool isAtOneLine(Symbol s1, Symbol s2)
         {
             int maxHeight = Math.Max(s1.Height, s2.Height);
@@ -71,11 +94,10 @@ namespace MathRecognition
 
             return sum / symbols.Count;
         }
-
         public static int FindMainBaselineIndex(List<List<Symbol>> baselines)
         {
             int index = -1;
-            double maxCoefficient = 0;
+            double maxCoefficient = -1;
 
             for (int i = 0; i < baselines.Count; i++)
                 if (getAverageHeightCoefficient(baselines[i]) - HIGHT_COEFFICIENT_FAULT > maxCoefficient)
@@ -86,7 +108,6 @@ namespace MathRecognition
 
             return index;
         }
-
         public static Dictionary<Symbol, List<List<Symbol>>> GetSplittedIntoGroupsBaselines(List<List<Symbol>> baselines, List<Symbol> mainBaseline)
         {
             List<List<Symbol>> newBaselines = baselines;
@@ -302,7 +323,6 @@ namespace MathRecognition
             else
                 return Math.Min(Math.Abs((a.TopLeftX + a.Width) - b.TopLeftX), Math.Abs((b.TopLeftX + b.Width) - a.TopLeftX));
         }
-        
         public static Symbol GetSymbolWithAddedBaselines(Symbol symbol, List<List<Symbol>> baselines)
         {
             Symbol newSymbol = symbol;
@@ -350,7 +370,6 @@ namespace MathRecognition
                 sum += symbol.MainCentreY;
             return sum / baseline.Count;
         }
-        
         public static List<Symbol> GetProjection(List<List<Symbol>> baselines)
         {
             List<Symbol> projection = new List<Symbol>();
@@ -361,8 +380,7 @@ namespace MathRecognition
 
             return projection;
         }
-
-        public static List<Symbol> FindBottomSymbols(List<List<Symbol>> baselines, Symbol mainSymbol, int depth = int.MaxValue)
+        public static List<Symbol> FindBottomSymbols(List<List<Symbol>> baselines, Symbol mainSymbol, int depth = int.MaxValue / 2)
         {
             List<List<Symbol>> tmpBaselines = baselines;
             List<Symbol> bottomSymbols = new List<Symbol>();
@@ -382,7 +400,7 @@ namespace MathRecognition
 
             return bottomSymbols;
         }
-        public static List<Symbol> FindUpperSymbols(List<List<Symbol>> baselines, Symbol mainSymbol, int depth = int.MaxValue)
+        public static List<Symbol> FindUpperSymbols(List<List<Symbol>> baselines, Symbol mainSymbol, int depth = int.MaxValue / 2)
         {
             List<List<Symbol>> tmpBaselines = baselines;
             List<Symbol> upperSymbols = new List<Symbol>();

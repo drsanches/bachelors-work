@@ -2,7 +2,6 @@ import sys
 from keras.models import model_from_json
 from functions import array_functions
 from functions import label_functions
-import numpy
 
 
 filename = "..\\dataset\\symbols.json"
@@ -19,11 +18,13 @@ try:
         array_path = str(sys.argv[1])
     except:
         # Debug
-        array_path = "..\\temp\\Test_0.txt"
+        array_path = "..\\temp\\2.txt"
         script_directory_path = ""
 
     input = array_functions.read_array_from_file(array_path)
+    # array_functions.array_to_image(input).show()
     input = array_functions.input_array_scaling(input, (input_width, input_height), "Black")
+    # array_functions.array_to_image(input).show()
     input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
 
@@ -36,11 +37,11 @@ try:
     # input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
 
-    json_file = open(script_directory_path + "cnn_data\\cnn11.json", "r")
+    json_file = open(script_directory_path + "cnn_data\\cnn12.json", "r")
     loaded_model_json = json_file.read()
     json_file.close()
     model = model_from_json(loaded_model_json)
-    model.load_weights(script_directory_path + "cnn_data\\cnn11.h5")
+    model.load_weights(script_directory_path + "cnn_data\\cnn12.h5")
 
     model.compile(loss="categorical_crossentropy",
             optimizer="adam",

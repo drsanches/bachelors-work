@@ -21,19 +21,19 @@ namespace MathRecognition
 
             //structuringDelegate += checkAllDotsForIJ;
             structuringDelegate += checkAllEquals;
+            structuringDelegate += checkAllFracs;
 
             return structuringDelegate;
         }
         private static void doNothing(ref List<List<Symbol>> baselines)
         { }
-        //TODO: Write code of functions
         private static void checkAllDotsForIJ(ref List<List<Symbol>> baselines)
         {
+            //TODO: Write code of functions
             MessageBox.Show("Check all dots");
         }
         private static void checkAllEquals(ref List<List<Symbol>> baselines)
         {
-            // TODO: Fix doubling of data
             Dictionary<Symbol, Symbol> equals = getAllPartsOfEquals(baselines);
 
             foreach (List<Symbol> baseline in baselines)
@@ -47,7 +47,6 @@ namespace MathRecognition
 
             baselines.RemoveAll(x => x.Count == 0);
 
-
             foreach (Symbol key in equals.Keys)
             {
                 Rectangle newRectangle = key.MainRectangle + equals[key].MainRectangle;
@@ -56,10 +55,6 @@ namespace MathRecognition
             }
 
             Baselines.SortBaselines(ref baselines);
-        }
-        private static void addInBaselines(ref List<List<Symbol>> baselines, Symbol symbol)
-        { 
-            
         }
         private static Dictionary<Symbol, Symbol> getAllPartsOfEquals(List<List<Symbol>> baselines)
         {
@@ -93,6 +88,70 @@ namespace MathRecognition
                 }
 
             return equals;
+        }
+        private static void checkAllFracs(ref List<List<Symbol>> baselines)
+        {
+            Symbol frac = getBiggestFrac(baselines);
+            if (frac != null)
+            {
+                List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, frac);
+                List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, frac);
+
+                frac.Baselines[0] = new List<List<Symbol>>();
+                frac.Baselines[0].Add(upperSymbols);
+                frac.Baselines[4] = new List<List<Symbol>>();
+                frac.Baselines[4].Add(bottomSymbols);
+                frac.MainRectangle.label = "\\frac";
+
+                foreach (List<Symbol> baseline in baselines)
+                {
+                    foreach (Symbol upperSymbol in upperSymbols)
+                        baseline.Remove(upperSymbol);
+                    
+                    foreach (Symbol bottomSymbol in bottomSymbols)
+                        baseline.Remove(bottomSymbol);
+                }
+                baselines.RemoveAll(x => x.Count == 0);
+
+                checkAllFracs(ref frac.Baselines[0]);
+                checkAllFracs(ref frac.Baselines[4]);
+            }
+        }
+        private static Symbol getBiggestFrac(List<List<Symbol>> baselines)
+        {
+            Symbol biggestFrac = null;
+
+            foreach (List<Symbol> baseline in baselines)
+                foreach (Symbol symbol in baseline)
+                {
+                    if (isFrac(baselines, symbol))
+                    {
+                        if (biggestFrac != null)
+                        {
+                            if (symbol.Width > biggestFrac.Width)
+                                biggestFrac = symbol;
+                        }
+                        else
+                        {
+                            biggestFrac = symbol;
+                        }
+                    }
+                }
+            
+            return biggestFrac;
+        }
+        private static bool isFrac(List<List<Symbol>> baselines, Symbol symbol)
+        { 
+            if (symbol.MainRectangle.label == "-")
+            {
+
+                List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, (int)(symbol.Width / 2));
+                List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, symbol, (int)(symbol.Width / 2));
+
+                return (bottomSymbols.Count != 0) && (upperSymbols.Count != 0);
+            }
+            else 
+                return false;
         }
     }
 }

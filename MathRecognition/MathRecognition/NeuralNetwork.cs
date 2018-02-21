@@ -46,7 +46,21 @@ namespace MathRecognition
                 {
                     Rectangle newRectangle = rect;
                     newRectangle.label = result;
-                    Recognized.Add(newRectangle);
+
+                    //TODO: Do something with this
+                    if (newRectangle.label == "-")
+                    {
+                        Segmentation segmentation = new Segmentation();
+                        if (segmentation.IsSeparableByLines(newRectangle))
+                        {
+                            newRectangle.label = "";
+                            NotRecognized.Add(newRectangle);
+                        }
+                        else
+                            Recognized.Add(newRectangle);
+                    }
+                    else
+                        Recognized.Add(newRectangle);
                 }
 
                 deleteArrayFile(arrayPath);
