@@ -11,12 +11,16 @@ namespace MathRecognition
 
     public static class StructuringDelegateCreator
     {
-        public static StructuringDelegate CreateDelegate()
+        private const double LINE_FAULT = 0.1;
+        private static string jsonFilename;
+
+        public static StructuringDelegate CreateDelegate(string symbolsFilename)
         {
+            jsonFilename = symbolsFilename;
             StructuringDelegate structuringDelegate = doNothing;
 
-            structuringDelegate += checkAllDotsForIJ;
-            structuringDelegate += checkAllLines;
+            //structuringDelegate += checkAllDotsForIJ;
+            structuringDelegate += checkAllEquals;
 
             return structuringDelegate;
         }
@@ -27,10 +31,68 @@ namespace MathRecognition
         {
             MessageBox.Show("Check all dots");
         }
-        private static void checkAllLines(ref List<List<Symbol>> baselines)
+        private static void checkAllEquals(ref List<List<Symbol>> baselines)
+        {
+            // TODO: Fix doubling of data
+            Dictionary<Symbol, Symbol> equals = getAllPartsOfEquals(baselines);
+
+            foreach (List<Symbol> baseline in baselines)
+            {
+                foreach (Symbol deletingSymbol in equals.Keys)
+                    baseline.Remove(deletingSymbol);
+
+                foreach (Symbol deletingSymbol in equals.Values)
+                    baseline.Remove(deletingSymbol);
+            }
+
+            baselines.RemoveAll(x => x.Count == 0);
+
+
+            foreach (Symbol key in equals.Keys)
+            {
+                Rectangle newRectangle = key.MainRectangle + equals[key].MainRectangle;
+                newRectangle.label = "=";
+                Baselines.AddInBaselines(ref baselines, newRectangle, jsonFilename);
+            }
+
+            Baselines.SortBaselines(ref baselines);
+        }
+        private static void addInBaselines(ref List<List<Symbol>> baselines, Symbol symbol)
         { 
-            //Equal, minus, \frac
-            MessageBox.Show("Check all lines");
+            
+        }
+        private static Dictionary<Symbol, Symbol> getAllPartsOfEquals(List<List<Symbol>> baselines)
+        {
+            List<List<Symbol>> tmpBaselines = baselines;
+            Dictionary<Symbol, Symbol> equals = new Dictionary<Symbol, Symbol>();
+
+            foreach (List<Symbol> baseline in tmpBaselines)
+                foreach (Symbol symbol in baseline)
+                {
+                    if (symbol.MainRectangle.label == "-")
+                    {
+                        List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(tmpBaselines, symbol, (int)(symbol.Width / 2));
+                        List<Symbol> upperSymbols = Baselines.FindUpperSymbols(tmpBaselines, symbol, (int)(symbol.Width / 2));
+                        if ((bottomSymbols.Count == 1) && (upperSymbols.Count == 0))
+                        {
+                            Symbol bottomSymbol = bottomSymbols[0];
+                            if ((bottomSymbol.MainRectangle.label == "-") &&
+                                    (Math.Abs(bottomSymbol.Width - symbol.Width) < Math.Max(bottomSymbol.Width, symbol.Width) * LINE_FAULT) &&
+                                    (equals.Keys.ToList().FindIndex(x => x == bottomSymbol) == -1))
+                                equals.Add(symbol, bottomSymbol);
+                        }
+                        if ((bottomSymbols.Count == 0) && (upperSymbols.Count == 1))
+                        {
+                            Symbol upperSymbol = upperSymbols[0];
+                            if ((upperSymbol.MainRectangle.label == "-") &&
+                                    (Math.Abs(upperSymbol.Width - symbol.Width) < Math.Max(upperSymbol.Width, symbol.Width) * LINE_FAULT) &&
+                                    (equals.Keys.ToList().FindIndex(x => x == upperSymbol) == -1))
+                                equals.Add(symbol, upperSymbol);
+                        }
+                    }
+                }
+
+            return equals;
         }
     }
 }

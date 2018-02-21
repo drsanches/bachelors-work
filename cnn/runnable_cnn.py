@@ -48,7 +48,7 @@ try:
 
 
     # Debug
-    # data = numpy.load("..\\dataset\\dataset-50x50.npz")
+    # data = numpy.load("..\\dataset\\dataset-32x32.npz")
     # X_test = data["X_test"]
     # Y_test = data["Y_test"]
     # for i in range(0, len(data["X_test"])):

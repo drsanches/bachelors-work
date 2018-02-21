@@ -90,6 +90,40 @@ namespace MathRecognition
                 }
             return res;
         }
+        //TODO: Test it
+        public static Rectangle operator +(Rectangle a, Rectangle b)
+        {
+            int newWidth = 0;
+            int newHeight = 0;
+
+            if (a.TopLeftX > b.TopLeftX)
+                newWidth = Math.Max(a.TopLeftX - b.TopLeftX + b.Width, a.Width);
+            else
+                newWidth = Math.Max(b.TopLeftX - a.TopLeftX + a.Width, b.Width);
+
+            if (a.TopLeftY > b.TopLeftY)
+                newHeight = Math.Max(a.TopLeftY - b.TopLeftY + b.Height, a.Height);
+            else
+                newHeight = Math.Max(b.TopLeftY - a.TopLeftY + a.Height, b.Height);
+
+            Rectangle newRectangle = new Rectangle(Math.Min(a.TopLeftX, b.TopLeftX),
+                    Math.Min(a.TopLeftY, b.TopLeftY),
+                    newWidth, newHeight);
+
+            for (int i = 0; i < newRectangle.Width; i++)
+                for (int j = 0; j < newRectangle.Height; j++)
+                    newRectangle.Array[i, j] = 0;
+
+            for (int i = 0; i < a.Width; i++)
+                for (int j = 0; j < a.Height; j++)
+                    newRectangle.Array[Math.Abs(newRectangle.TopLeftX - a.TopLeftX) + i, Math.Abs(newRectangle.TopLeftY - a.TopLeftY) + j] += a.Array[i, j];
+
+            for (int i = 0; i < b.Width; i++)
+                for (int j = 0; j < b.Height; j++)
+                    newRectangle.Array[Math.Abs(newRectangle.TopLeftX - b.TopLeftX) + i, Math.Abs(newRectangle.TopLeftY - b.TopLeftY) + j] += b.Array[i, j];
+
+            return newRectangle;
+        }
         public bool IsZero()
         {
             for (int i = 0; i < Width; i++)

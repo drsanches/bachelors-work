@@ -41,7 +41,7 @@ print(model.summary())
 tensorboard=TensorBoard(log_dir='./logs', write_graph=True)
 history = model.fit(X_train, Y_train,
                     batch_size=out_count*5,
-                    epochs=10,
+                    epochs=50,
                     verbose=1,
                     validation_data=(X_test, Y_test),
                     callbacks=[tensorboard])
@@ -59,7 +59,7 @@ print("Accuracy on test data: %.2f%%" % (scores[1]*100))
 
 # Saving
 json_model = model.to_json()
-json_file = open("cnn_data\\cnn11.json", "w")
+json_file = open("cnn_data\\cnn12.json", "w")
 json_file.write(json_model)
 json_file.close()
-model.save_weights("cnn_data\\cnn11.h5")
+model.save_weights("cnn_data\\cnn12.h5")

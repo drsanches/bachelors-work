@@ -33,9 +33,7 @@ namespace MathRecognition
             while (NotRecognized.Count > 0)
             {
                 NotRecognized = makeSegmentation(NotRecognized);
-
                 neuralNetwork.RecognizeList(NotRecognized);
-                
                 NotRecognized.Clear();
 
                 foreach (Rectangle rect in neuralNetwork.Recognized)

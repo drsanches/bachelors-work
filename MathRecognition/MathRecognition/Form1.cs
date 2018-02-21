@@ -12,7 +12,8 @@ namespace MathRecognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\Structuring3.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\lines_equals2.png";
+        private const string SYMBOLS_FILENAME = "..\\..\\..\\..\\dataset\\Symbols.json";
         Bitmap bitmap;
         Graphics g;
         Recognizer recognizer;
@@ -35,7 +36,7 @@ namespace MathRecognition
 
             Segmentation segmentation = new Segmentation();
             NeuralNetwork cnn = new NeuralNetwork();
-            Structuring structuring = new Structuring(StructuringDelegateCreator.CreateDelegate());
+            Structuring structuring = new Structuring(SYMBOLS_FILENAME, StructuringDelegateCreator.CreateDelegate(SYMBOLS_FILENAME));
             
             recognizer = new Recognizer(segmentation, cnn, structuring);
             LatexCode = recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));

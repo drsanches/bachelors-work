@@ -31,6 +31,13 @@ namespace MathRecognition
             MainCentreY = rectangle.GetCentrePoint().Y + (int)(Height * getCenterYShift(rectangle.label, symbolsFilename));
             HeightCoefficient = Height / (double)getRelativeHeignt(rectangle, symbolsFilename);
         }
+        public Symbol plus(Symbol b, string symbolsFilename)
+        {
+            Rectangle newRectangle = new Rectangle();
+            newRectangle = this.MainRectangle + b.MainRectangle;
+            Symbol newSymbol = new Symbol(newRectangle, symbolsFilename);
+            return newSymbol;
+        }
         private double getCenterYShift(string label, string symbolsFilename)
         {
             System.IO.StreamReader file = new System.IO.StreamReader(@symbolsFilename);
