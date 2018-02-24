@@ -52,7 +52,7 @@ namespace MathRecognition
             foreach (Symbol symbol in baselines[0])
                 for (int i = 0; i < symbol.Baselines.Count(); i++)
                     if (symbol.Baselines[i] != null)
-                        if (symbol.Baselines[i].Count > 1)
+                        if (symbol.Baselines[i].Count > 0)
                             runStructuring(ref symbol.Baselines[i]);
         }
         private string getBaselineLatexCode(List<Symbol> baseline)

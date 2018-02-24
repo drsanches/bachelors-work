@@ -22,6 +22,17 @@ namespace MathRecognition
 
             return allBaselines;
         }
+        public static List<List<Symbol>> CreateBaselines(List<Symbol> symbols, string symbolsFilename)
+        {
+            List<List<Symbol>> allBaselines = new List<List<Symbol>>();
+
+            foreach (Symbol symbol in symbols)
+                AddInBaselines(ref allBaselines, symbol, symbolsFilename);
+
+            SortBaselines(ref allBaselines);
+
+            return allBaselines;
+        }
         public static void SortBaselines(ref List<List<Symbol>> baselines)
         {
             foreach (List<Symbol> baseline in baselines)

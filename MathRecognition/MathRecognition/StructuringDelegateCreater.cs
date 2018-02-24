@@ -97,10 +97,8 @@ namespace MathRecognition
                 List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, frac);
                 List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, frac);
 
-                frac.Baselines[0] = new List<List<Symbol>>();
-                frac.Baselines[0].Add(upperSymbols);
-                frac.Baselines[4] = new List<List<Symbol>>();
-                frac.Baselines[4].Add(bottomSymbols);
+                frac.Baselines[0] = Baselines.CreateBaselines(upperSymbols, jsonFilename);
+                frac.Baselines[4] = Baselines.CreateBaselines(bottomSymbols, jsonFilename);
                 frac.MainRectangle.label = "\\frac";
 
                 foreach (List<Symbol> baseline in baselines)

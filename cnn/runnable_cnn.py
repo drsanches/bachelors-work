@@ -2,6 +2,7 @@ import sys
 from keras.models import model_from_json
 from functions import array_functions
 from functions import label_functions
+import numpy
 
 
 filename = "..\\dataset\\symbols.json"
@@ -22,15 +23,15 @@ try:
         script_directory_path = ""
 
     input = array_functions.read_array_from_file(array_path)
-    # array_functions.array_to_image(input).show()
+    array_functions.array_to_image(input).show()
     input = array_functions.input_array_scaling(input, (input_width, input_height), "Black")
-    # array_functions.array_to_image(input).show()
+    array_functions.array_to_image(input).show()
     input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
 
     # Debug
     # data = numpy.load("..\\dataset\\dataset-32x32.npz")
-    # num = 310
+    # num = 140
     # input = data["X_test"][num]
     # print(data["Y_test"][num])
     # array_functions.array_to_image(input).show()
