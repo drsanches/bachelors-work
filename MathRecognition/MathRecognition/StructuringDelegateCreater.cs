@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace MathRecognition
 {
@@ -12,16 +13,17 @@ namespace MathRecognition
     public static class StructuringDelegateCreator
     {
         private const double LINE_FAULT = 0.1;
-        private static string jsonFilename;
+        private static string symbolsFilename;
 
-        public static StructuringDelegate CreateDelegate(string symbolsFilename)
+        public static StructuringDelegate CreateDelegate(string symbolsJsonFilename)
         {
-            jsonFilename = symbolsFilename;
+            symbolsFilename = symbolsJsonFilename;
             StructuringDelegate structuringDelegate = doNothing;
 
             //structuringDelegate += checkAllDotsForIJ;
             structuringDelegate += checkAllEquals;
             structuringDelegate += checkAllFracs;
+            structuringDelegate += checkAllCompositeOperators;
 
             return structuringDelegate;
         }
@@ -51,7 +53,7 @@ namespace MathRecognition
             {
                 Rectangle newRectangle = key.MainRectangle + equals[key].MainRectangle;
                 newRectangle.label = "=";
-                Baselines.AddInBaselines(ref baselines, newRectangle, jsonFilename);
+                Baselines.AddInBaselines(ref baselines, newRectangle, symbolsFilename);
             }
 
             Baselines.SortBaselines(ref baselines);
@@ -97,8 +99,8 @@ namespace MathRecognition
                 List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, frac);
                 List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, frac);
 
-                frac.Baselines[0] = Baselines.CreateBaselines(upperSymbols, jsonFilename);
-                frac.Baselines[4] = Baselines.CreateBaselines(bottomSymbols, jsonFilename);
+                frac.Baselines[0] = Baselines.CreateBaselines(upperSymbols, symbolsFilename);
+                frac.Baselines[4] = Baselines.CreateBaselines(bottomSymbols, symbolsFilename);
                 frac.MainRectangle.label = "\\frac";
 
                 foreach (List<Symbol> baseline in baselines)
@@ -142,7 +144,6 @@ namespace MathRecognition
         { 
             if (symbol.MainRectangle.label == "-")
             {
-
                 List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, (int)(symbol.Width / 2));
                 List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, symbol, (int)(symbol.Width / 2));
 
@@ -150,6 +151,76 @@ namespace MathRecognition
             }
             else 
                 return false;
+        }
+        private static void checkAllCompositeOperators(ref List<List<Symbol>> baselines)
+        {
+            string[] operatorsCodes = getAllOperators();
+            
+            foreach (string operatorCode in operatorsCodes)
+            {
+                List<Symbol> deletingSymbols = new List<Symbol>();
+                List<List<Symbol>> softBaselines = Baselines.CreateBaselines(Baselines.GetProjection(baselines), symbolsFilename, 0.4);
+
+                foreach (List<Symbol> baseline in softBaselines)
+                {
+                    string stringOfBaseline = getStringOfBaseline(baseline);
+
+                    int operatorLength = operatorCode.Length - 1;
+                    int startIndex = stringOfBaseline.IndexOf(operatorCode.Substring(1, operatorLength), StringComparison.CurrentCultureIgnoreCase);
+
+                    while (startIndex != -1)
+                    {
+                        Symbol newSymbol = baseline[startIndex];
+                        deletingSymbols.Add(baseline[startIndex]);
+
+                        for (int j = 1; j < operatorLength; j++)
+                        {
+                            newSymbol = new Symbol(newSymbol.MainRectangle + baseline[startIndex + j].MainRectangle, symbolsFilename);
+                            deletingSymbols.Add(baseline[startIndex + j]);
+                        }
+
+                        newSymbol.MainRectangle.label = operatorCode;
+                        newSymbol.HeightCoefficient = Baselines.getAverageHeightCoefficient(deletingSymbols);
+                        Baselines.AddInBaselines(ref baselines, newSymbol, symbolsFilename);
+
+                        string stringForInsert = new String(' ', operatorLength);
+                        stringOfBaseline = stringOfBaseline.Remove(startIndex, operatorLength);
+                        stringOfBaseline = stringOfBaseline.Insert(startIndex, stringForInsert);
+
+                        if (stringOfBaseline.IndexOf(operatorCode.Substring(1, operatorLength), StringComparison.CurrentCultureIgnoreCase) != -1)
+                            startIndex += stringOfBaseline.IndexOf(operatorCode.Substring(1, operatorLength), StringComparison.CurrentCultureIgnoreCase);
+                        else
+                            startIndex = -1;
+                    }
+                }
+
+                foreach (Symbol deletingSymbol in deletingSymbols)
+                    foreach (List<Symbol> baseline in baselines)
+                        baseline.Remove(deletingSymbol);
+                baselines.RemoveAll(x => x.Count == 0);
+
+                Baselines.SortBaselines(ref baselines);
+            }
+        }
+        private static string[] getAllOperators()
+        {
+            System.IO.StreamReader file = new System.IO.StreamReader(symbolsFilename);
+            string jsonString = file.ReadToEnd();
+            file.Close();
+
+            JObject fileJObject = JObject.Parse(jsonString);
+            string[] operatorsCodes = fileJObject.GetValue("CompositeOperators").ToString().Split(' ');
+
+            return operatorsCodes;
+        }
+        private static string getStringOfBaseline(List<Symbol> baseline)
+        { 
+            string stringOfBaseline = "";
+
+            foreach (Symbol symbol in baseline)
+                stringOfBaseline += symbol.MainRectangle.label;
+
+            return stringOfBaseline;
         }
     }
 }

@@ -1,3 +1,3 @@
-start http://alexander-hp:6006
-tensorboard --logdir=.
+start http://localhost:6006
+tensorboard --logdir=. --host=localhost
 cmd /k 

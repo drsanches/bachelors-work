@@ -11,23 +11,25 @@ namespace MathRecognition
         private const double CENTRE_DISPLACEMENT_COEFFICIENT = 0.1;
         private const double HIGHT_COEFFICIENT_FAULT = 0.2;
 
-        public static List<List<Symbol>> CreateBaselines(List<Rectangle> rectangles, string symbolsFilename)
+        public static List<List<Symbol>> CreateBaselines(List<Rectangle> rectangles, string symbolsFilename, 
+                double centreDisplacementCoefficient = CENTRE_DISPLACEMENT_COEFFICIENT)
         {
             List<List<Symbol>> allBaselines = new List<List<Symbol>>();
 
             foreach (Rectangle rect in rectangles)
-                AddInBaselines(ref allBaselines, rect, symbolsFilename);
+                AddInBaselines(ref allBaselines, rect, symbolsFilename, centreDisplacementCoefficient);
 
             SortBaselines(ref allBaselines);
 
             return allBaselines;
         }
-        public static List<List<Symbol>> CreateBaselines(List<Symbol> symbols, string symbolsFilename)
+        public static List<List<Symbol>> CreateBaselines(List<Symbol> symbols, string symbolsFilename, 
+                double centreDisplacementCoefficient = CENTRE_DISPLACEMENT_COEFFICIENT)
         {
             List<List<Symbol>> allBaselines = new List<List<Symbol>>();
 
             foreach (Symbol symbol in symbols)
-                AddInBaselines(ref allBaselines, symbol, symbolsFilename);
+                AddInBaselines(ref allBaselines, symbol, symbolsFilename, centreDisplacementCoefficient);
 
             SortBaselines(ref allBaselines);
 
@@ -39,38 +41,20 @@ namespace MathRecognition
                 baseline.Sort((a, b) => a.TopLeftX.CompareTo(b.TopLeftX));
             baselines.Sort((a, b) => a[0].TopLeftX.CompareTo(b[0].TopLeftX));
         }
-        public static void AddInBaselines(ref List<List<Symbol>> baselines, Rectangle rectangle, string symbolsFilename)
+        public static void AddInBaselines(ref List<List<Symbol>> baselines, Rectangle rectangle, 
+                string symbolsFilename, double centreDisplacementCoefficient = CENTRE_DISPLACEMENT_COEFFICIENT)
         {
             Symbol newSymbol = new Symbol(rectangle, symbolsFilename);
-
-            bool isAdded = false;
-            for (int line = 0; line < baselines.Count; line++)
-            {
-                foreach (Symbol element in baselines[line])
-                    if (isAtOneLine(element, newSymbol))
-                    {
-                        baselines[line].Add(newSymbol);
-                        isAdded = true;
-                        break;
-                    }
-
-                if (isAdded)
-                    break;
-            }
-
-            if (!isAdded)
-            {
-                baselines.Add(new List<Symbol>());
-                baselines.Last().Add(newSymbol);
-            }
+            AddInBaselines(ref baselines, newSymbol, symbolsFilename, centreDisplacementCoefficient);
         }
-        public static void AddInBaselines(ref List<List<Symbol>> baselines, Symbol symbol, string symbolsFilename)
+        public static void AddInBaselines(ref List<List<Symbol>> baselines, Symbol symbol, 
+                string symbolsFilename, double centreDisplacementCoefficient = CENTRE_DISPLACEMENT_COEFFICIENT)
         {
             bool isAdded = false;
             for (int line = 0; line < baselines.Count; line++)
             {
                 foreach (Symbol element in baselines[line])
-                    if (isAtOneLine(element, symbol))
+                    if (isAtOneLine(element, symbol, centreDisplacementCoefficient))
                     {
                         baselines[line].Add(symbol);
                         isAdded = true;
@@ -87,17 +71,17 @@ namespace MathRecognition
                 baselines.Last().Add(symbol);
             }
         }
-        private static bool isAtOneLine(Symbol s1, Symbol s2)
+        private static bool isAtOneLine(Symbol s1, Symbol s2, double centreDisplacementCoefficient)
         {
             int maxHeight = Math.Max(s1.Height, s2.Height);
             int y1 = s1.MainCentreY;
             int y2 = s2.MainCentreY;
-            if ((y1 < y2 + maxHeight * CENTRE_DISPLACEMENT_COEFFICIENT) && (y1 > y2 - maxHeight * CENTRE_DISPLACEMENT_COEFFICIENT))
+            if ((y1 < y2 + maxHeight * centreDisplacementCoefficient) && (y1 > y2 - maxHeight * centreDisplacementCoefficient))
                 return true;
             else
                 return false;
         }
-        private static double getAverageHeightCoefficient(List<Symbol> symbols)
+        public static double getAverageHeightCoefficient(List<Symbol> symbols)
         {
             double sum = 0;
             foreach (Symbol symbol in symbols)
@@ -105,13 +89,13 @@ namespace MathRecognition
 
             return sum / symbols.Count;
         }
-        public static int FindMainBaselineIndex(List<List<Symbol>> baselines)
+        public static int FindMainBaselineIndex(List<List<Symbol>> baselines, double hightCoefficientFault = HIGHT_COEFFICIENT_FAULT)
         {
             int index = -1;
             double maxCoefficient = -1;
 
             for (int i = 0; i < baselines.Count; i++)
-                if (getAverageHeightCoefficient(baselines[i]) - HIGHT_COEFFICIENT_FAULT > maxCoefficient)
+                if (getAverageHeightCoefficient(baselines[i]) - hightCoefficientFault > maxCoefficient)
                 {
                     maxCoefficient = getAverageHeightCoefficient(baselines[i]);
                     index = i;
@@ -269,7 +253,6 @@ namespace MathRecognition
         {
             List<Symbol> projection = GetProjection(baselines);
             Dictionary<Symbol, Symbol> connectedSymbols = new Dictionary<Symbol, Symbol>();
-            double coefficient = 0.5;
 
             foreach (Symbol mainSymbol in mainBaseline)
             {
@@ -337,23 +320,27 @@ namespace MathRecognition
         public static Symbol GetSymbolWithAddedBaselines(Symbol symbol, List<List<Symbol>> baselines)
         {
             Symbol newSymbol = symbol;
+            
+            foreach (List<Symbol> baseline in baselines) 
+            { 
+                int index = -1;
 
-            foreach (List<Symbol> baseline in baselines)
-                if (getBaselineAverageY(baseline) < symbol.MainCentreY)
+                if (getBaselineAverageY(baseline) < symbol.TopLeftY)
+                    index = 0;
+                else if ((getBaselineAverageY(baseline) < symbol.MainCentreY) && (getBaselineAverageY(baseline) > symbol.TopLeftY))
+                    index = 1;
+                else if ((getBaselineAverageY(baseline) > symbol.MainCentreY) && (getBaselineAverageY(baseline) < symbol.TopLeftY + symbol.Height))
+                    index = 3;
+                else if (getBaselineAverageY(baseline) > symbol.TopLeftY + symbol.Height)
+                    index = 4;
+
+                if (index != -1)
                 {
-                    if (newSymbol.Baselines[1] == null)
-                        newSymbol.Baselines[1] = new List<List<Symbol>>();
-
-                    newSymbol.Baselines[1].Add(baseline);
+                    if (newSymbol.Baselines[index] == null)
+                        newSymbol.Baselines[index] = new List<List<Symbol>>();
+                    newSymbol.Baselines[index].Add(baseline);
                 }
-                else
-                {
-                    if (newSymbol.Baselines[3] == null)
-                        newSymbol.Baselines[3] = new List<List<Symbol>>();
-
-                    newSymbol.Baselines[3].Add(baseline);
-                }
-
+            }
             return newSymbol;
         }
         private static Dictionary<String, List<List<Symbol>>> separateByBaseline(List<List<Symbol>> baselines, int baselineIndex)
