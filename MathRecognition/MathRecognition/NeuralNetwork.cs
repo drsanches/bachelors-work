@@ -33,12 +33,8 @@ namespace MathRecognition
         {
             foreach (Rectangle rect in notRecognized)
             {
-                //For normal work
                 string arrayPath = createArrayFile(rect, TEMP_DIRECTORY_PATH);
                 string result = recognizeOne(rect, arrayPath);
-
-                //For debug
-                //string result = recognizeOne(rectangle, "..\\..\\..\\..\\cnn\\tools\\1.txt");
 
                 if (result.Equals("Error"))
                     NotRecognized.Add(rect);

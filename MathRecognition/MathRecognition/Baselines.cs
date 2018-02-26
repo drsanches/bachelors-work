@@ -276,7 +276,10 @@ namespace MathRecognition
                     }
                 }
                     
-                connectedSymbols.Add(mainSymbol, minSymbol);                
+                if (connectedSymbols.Values.ToList().FindIndex(x => x == minSymbol) == -1)
+                    connectedSymbols.Add(mainSymbol, minSymbol);
+                else
+                    connectedSymbols.Add(mainSymbol, null);
             }
 
             return connectedSymbols;
@@ -390,8 +393,10 @@ namespace MathRecognition
                     {
                         if ((symbol.MainCentreY > mainSymbol.MainCentreY) &&
                                 (symbol.TopLeftY < mainSymbol.TopLeftY + mainSymbol.Height + depth) &&
-                                (symbol.MainCentreX > mainSymbol.TopLeftX) &&
-                                (symbol.MainCentreX < mainSymbol.TopLeftX + mainSymbol.Width))
+                                (((symbol.TopLeftX > mainSymbol.TopLeftX) && (symbol.TopLeftX < mainSymbol.TopLeftX + mainSymbol.Width)) ||
+                                ((symbol.TopLeftX + symbol.Width > mainSymbol.TopLeftX) && (symbol.TopLeftX + symbol.Width < mainSymbol.TopLeftX + mainSymbol.Width)) ||
+                                ((mainSymbol.TopLeftX > symbol.TopLeftX) && (mainSymbol.TopLeftX < symbol.TopLeftX + symbol.Width)) ||
+                                ((mainSymbol.TopLeftX + mainSymbol.Width > symbol.TopLeftX) && (mainSymbol.TopLeftX + mainSymbol.Width < symbol.TopLeftX + symbol.Width))))
                             bottomSymbols.Add(symbol);
                     }
                 }
@@ -410,8 +415,10 @@ namespace MathRecognition
                     {
                         if ((symbol.MainCentreY < mainSymbol.MainCentreY) &&
                                 (symbol.TopLeftY + symbol.Height > mainSymbol.TopLeftY - depth) &&
-                                (symbol.MainCentreX > mainSymbol.TopLeftX) &&
-                                (symbol.MainCentreX < mainSymbol.TopLeftX + mainSymbol.Width))
+                                (((symbol.TopLeftX > mainSymbol.TopLeftX) && (symbol.TopLeftX < mainSymbol.TopLeftX + mainSymbol.Width)) ||
+                                ((symbol.TopLeftX + symbol.Width > mainSymbol.TopLeftX) && (symbol.TopLeftX + symbol.Width < mainSymbol.TopLeftX + mainSymbol.Width)) ||
+                                ((mainSymbol.TopLeftX > symbol.TopLeftX) && (mainSymbol.TopLeftX < symbol.TopLeftX + symbol.Width)) ||
+                                ((mainSymbol.TopLeftX + mainSymbol.Width > symbol.TopLeftX) && (mainSymbol.TopLeftX + mainSymbol.Width < symbol.TopLeftX + symbol.Width))))
                             upperSymbols.Add(symbol);
                     }
                 }

@@ -46,7 +46,7 @@ namespace MathRecognition
                 neuralNetwork.NotRecognized.Clear();
             }
 
-            string latexCode = structuring.getLatexCode(Recognized);
+            string latexCode = structuring.getLatexCode(Recognized, CanNotBeRecognized, neuralNetwork);
 
             return latexCode;
         }

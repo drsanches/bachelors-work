@@ -80,7 +80,7 @@ namespace MathRecognition
 
                 element = element.Next;
             }
-            return 0;
+            return rectangle.Height;
         }
     }
 }

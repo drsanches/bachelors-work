@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MathRecognition
 {
-    public delegate void StructuringDelegate(ref List<List<Symbol>> baselines);
+    public delegate void StructuringDelegate(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork);
 
     public static class StructuringDelegateCreator
     {
@@ -20,21 +20,55 @@ namespace MathRecognition
             symbolsFilename = symbolsJsonFilename;
             StructuringDelegate structuringDelegate = doNothing;
 
-            //structuringDelegate += checkAllDotsForIJ;
+            structuringDelegate += checkAllDotsForIJ;
             structuringDelegate += checkAllEquals;
             structuringDelegate += checkAllFracs;
             structuringDelegate += checkAllCompositeOperators;
 
             return structuringDelegate;
         }
-        private static void doNothing(ref List<List<Symbol>> baselines)
+        private static void doNothing(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
         { }
-        private static void checkAllDotsForIJ(ref List<List<Symbol>> baselines)
+        private static void checkAllDotsForIJ(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
         {
-            //TODO: Write code of functions
-            MessageBox.Show("Check all dots");
+            List<Symbol> deletingSymbols = new List<Symbol>();
+            foreach (Rectangle rectangle in notRecognizedRectangles)
+            {
+                Symbol newSymbol = new Symbol(rectangle, symbolsFilename);
+                Baselines.AddInBaselines(ref baselines, newSymbol, symbolsFilename);
+                deletingSymbols.Add(newSymbol);
+            }
+
+            foreach (List<Symbol> baseline in baselines)
+                foreach (Symbol symbol in baseline)
+                    if (symbol.MainRectangle.label == ".")
+                    {
+                        List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, symbol.Height * 5);
+                        if (bottomSymbols.Count == 1)
+                        {
+                            Symbol bottomSymbol = bottomSymbols.First();
+                            List<Rectangle> list = new List<Rectangle>();
+                            list.Add(symbol.MainRectangle + bottomSymbol.MainRectangle);
+                            neuralNetwork.RecognizeList(list);
+                            if (neuralNetwork.Recognized.Count == 1)
+                            {
+                                deletingSymbols.Add(symbol);
+                                deletingSymbols.Add(bottomSymbol);
+                                Baselines.AddInBaselines(ref baselines, neuralNetwork.Recognized.First(), symbolsFilename);
+                                neuralNetwork.Recognized.Clear();
+                                neuralNetwork.NotRecognized.Clear();
+                            }
+                        }
+                    }
+
+            foreach (Symbol deletingSymbol in deletingSymbols)
+                foreach (List<Symbol> baseline in baselines)
+                    baseline.RemoveAll(x => x == deletingSymbol);
+            baselines.RemoveAll(x => x.Count == 0);
+
+            Baselines.SortBaselines(ref baselines);
         }
-        private static void checkAllEquals(ref List<List<Symbol>> baselines)
+        private static void checkAllEquals(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
         {
             Dictionary<Symbol, Symbol> equals = getAllPartsOfEquals(baselines);
 
@@ -91,7 +125,7 @@ namespace MathRecognition
 
             return equals;
         }
-        private static void checkAllFracs(ref List<List<Symbol>> baselines)
+        private static void checkAllFracs(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
         {
             Symbol frac = getBiggestFrac(baselines);
             if (frac != null)
@@ -113,8 +147,8 @@ namespace MathRecognition
                 }
                 baselines.RemoveAll(x => x.Count == 0);
 
-                checkAllFracs(ref frac.Baselines[0]);
-                checkAllFracs(ref frac.Baselines[4]);
+                checkAllFracs(ref frac.Baselines[0], notRecognizedRectangles, neuralNetwork);
+                checkAllFracs(ref frac.Baselines[4], notRecognizedRectangles, neuralNetwork);
             }
         }
         private static Symbol getBiggestFrac(List<List<Symbol>> baselines)
@@ -152,7 +186,7 @@ namespace MathRecognition
             else 
                 return false;
         }
-        private static void checkAllCompositeOperators(ref List<List<Symbol>> baselines)
+        private static void checkAllCompositeOperators(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
         {
             string[] operatorsCodes = getAllOperators();
             

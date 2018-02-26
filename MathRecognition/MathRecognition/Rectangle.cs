@@ -90,21 +90,20 @@ namespace MathRecognition
                 }
             return res;
         }
-        //TODO: Test it
         public static Rectangle operator +(Rectangle a, Rectangle b)
         {
             int newWidth = 0;
             int newHeight = 0;
 
-            if (a.TopLeftX > b.TopLeftX)
-                newWidth = Math.Max(a.TopLeftX - b.TopLeftX + b.Width, a.Width);
+            if (a.TopLeftX < b.TopLeftX)
+                newWidth = Math.Max(b.TopLeftX + b.Width - a.TopLeftX, a.Width);
             else
-                newWidth = Math.Max(b.TopLeftX - a.TopLeftX + a.Width, b.Width);
+                newWidth = Math.Max(a.TopLeftX + a.Width - b.TopLeftX, b.Width);
 
-            if (a.TopLeftY > b.TopLeftY)
-                newHeight = Math.Max(a.TopLeftY - b.TopLeftY + b.Height, a.Height);
+            if (a.TopLeftY < b.TopLeftY)
+                newHeight = Math.Max(b.TopLeftY + b.Height - a.TopLeftY, a.Height);
             else
-                newHeight = Math.Max(b.TopLeftY - a.TopLeftY + a.Height, b.Height);
+                newHeight = Math.Max(a.TopLeftY + a.Height - b.TopLeftY, b.Height);
 
             Rectangle newRectangle = new Rectangle(Math.Min(a.TopLeftX, b.TopLeftX),
                     Math.Min(a.TopLeftY, b.TopLeftY),

@@ -11,7 +11,7 @@ namespace MathRecognition
     {
         public StructuringAbstractFactory()
         { }
-        public abstract string getLatexCode(List<Rectangle> rectangles);
+        public abstract string getLatexCode(List<Rectangle> rectangles, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork);
     }
     
     public class Structuring : StructuringAbstractFactory
@@ -24,10 +24,10 @@ namespace MathRecognition
             symbolsFilename = symbolsJsonFilename;
             structuringDelegate = structDel;
         }
-        public override string getLatexCode(List<Rectangle> rectangles)
+        public override string getLatexCode(List<Rectangle> rectangles, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
         {
             List<List<Symbol>> allBaselines = Baselines.CreateBaselines(rectangles, symbolsFilename);
-            structuringDelegate.Invoke(ref allBaselines);
+            structuringDelegate.Invoke(ref allBaselines, notRecognizedRectangles, neuralNetwork);
             runStructuring(ref allBaselines);
             string latexCode = getBaselineLatexCode(allBaselines[0], symbolsFilename);
             return latexCode;

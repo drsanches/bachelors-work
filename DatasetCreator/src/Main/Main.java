@@ -10,9 +10,9 @@ package Main;
         import org.json.*;
 
 public class Main {
-    static final String SYMBOLS_FILENAME = "..\\dataset\\symbols.json";
+    static final String SYMBOLS_FILENAME = "..\\dataset\\symbols-with-point.json";
     static final String IMAGES_DIRECTORY = "..\\dataset\\images";
-    static final String OUTPUT_FILENAME = "..\\dataset\\dataset-32x32.npz";
+    static final String OUTPUT_FILENAME = "..\\dataset\\dataset-32x32-with-point.npz";
     static final String SCRIPT_FILENAME = "images_to_dataset.py";
     static final int WIDTH = 32;
     static final int HEIGHT = 32;

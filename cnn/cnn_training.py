@@ -5,7 +5,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import TensorBoard
 
 
-dataset_filename = "..\\dataset\\dataset-32x32.npz"
+dataset_filename = "..\\dataset\\dataset-32x32-with-point.npz"
 
 # Load dataset
 dataset = numpy.load(dataset_filename)
@@ -59,7 +59,7 @@ print("Accuracy on test data: %.2f%%" % (scores[1]*100))
 
 # Saving
 json_model = model.to_json()
-json_file = open("cnn_data\\cnn12.json", "w")
+json_file = open("cnn_data\\cnn13.json", "w")
 json_file.write(json_model)
 json_file.close()
-model.save_weights("cnn_data\\cnn12.h5")
+model.save_weights("cnn_data\\cnn13.h5")

@@ -5,7 +5,7 @@ from functions import label_functions
 import numpy
 
 
-filename = "..\\dataset\\symbols.json"
+filename = "..\\dataset\\symbols-with-point.json"
 input_width = 32
 input_height = 32
 
@@ -38,11 +38,11 @@ try:
     # input = input.reshape(1, input.shape[0], input.shape[1], 1)
 
 
-    json_file = open(script_directory_path + "cnn_data\\cnn12.json", "r")
+    json_file = open(script_directory_path + "cnn_data\\cnn13.json", "r")
     loaded_model_json = json_file.read()
     json_file.close()
     model = model_from_json(loaded_model_json)
-    model.load_weights(script_directory_path + "cnn_data\\cnn12.h5")
+    model.load_weights(script_directory_path + "cnn_data\\cnn13.h5")
 
     model.compile(loss="categorical_crossentropy",
             optimizer="adam",

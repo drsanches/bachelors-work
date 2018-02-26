@@ -12,8 +12,8 @@ namespace MathRecognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\symbol_types4.png";
-        private const string SYMBOLS_FILENAME = "..\\..\\..\\..\\dataset\\Symbols.json";
+        const string filename = "..\\..\\..\\..\\Formulas\\ij.png";
+        private const string SYMBOLS_FILENAME = "..\\..\\..\\..\\dataset\\Symbols-with-point.json";
         Bitmap bitmap;
         Graphics g;
         Recognizer recognizer;
