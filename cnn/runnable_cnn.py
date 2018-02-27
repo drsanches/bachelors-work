@@ -16,17 +16,24 @@ try:
         path_steps = script_name.split("\\")
         script_name = path_steps[len(path_steps) - 1]
         script_directory_path = str(sys.argv[0]).replace(script_name, "")
-        array_path = str(sys.argv[1])
+
+        array_paths = []
+        for i in range(1, len(sys.argv)):
+            array_paths.append(str(sys.argv[i]))
     except:
         # Debug
-        array_path = "..\\temp\\2.txt"
+        array_paths = ["..\\temp\\1.txt", "..\\temp\\2.txt", "..\\temp\\3.txt"]
         script_directory_path = ""
 
-    input = array_functions.read_array_from_file(array_path)
-    array_functions.array_to_image(input).show()
-    input = array_functions.input_array_scaling(input, (input_width, input_height), "Black")
-    array_functions.array_to_image(input).show()
-    input = input.reshape(1, input.shape[0], input.shape[1], 1)
+
+    inputs = []
+    for array_path in array_paths:
+        input = array_functions.read_array_from_file(array_path)
+        array_functions.array_to_image(input).show()
+        input = array_functions.input_array_scaling(input, (input_width, input_height), "Black")
+        array_functions.array_to_image(input).show()
+        input = input.reshape(1, input.shape[0], input.shape[1], 1)
+        inputs.append(input)
 
 
     # Debug
@@ -36,6 +43,7 @@ try:
     # print(data["Y_test"][num])
     # array_functions.array_to_image(input).show()
     # input = input.reshape(1, input.shape[0], input.shape[1], 1)
+    # inputs = [input]
 
 
     json_file = open(script_directory_path + "cnn_data\\cnn13.json", "r")
@@ -60,16 +68,16 @@ try:
     #     print(str(i) + " - %.2f%%" % (scores[1]*100))
 
 
-    result = model.predict_on_batch(input)
+    label = ""
+    for input in inputs:
+        result = model.predict_on_batch(input)
 
+        # Debug
+        # print(result)
+        # print(result.max())
 
-    # Debug
-    # print(result)
-    # print(result.max())
-
-
-    label = label_functions.label_creator(result, script_directory_path + filename)
+        label += label_functions.label_creator(result, script_directory_path + filename) + " "
 except:
-    label = "Error"
+    label = "Runtime error!"
 finally:
     print(label, end="")

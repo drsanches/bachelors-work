@@ -31,17 +31,18 @@ namespace MathRecognition
         { }
         public override void RecognizeList(List<Rectangle> notRecognized)
         {
-            foreach (Rectangle rect in notRecognized)
-            {
-                string arrayPath = createArrayFile(rect, TEMP_DIRECTORY_PATH);
-                string result = recognizeOne(rect, arrayPath);
+            string[] arrayPaths = createArrayFiles(notRecognized, TEMP_DIRECTORY_PATH);
+            string[] results = recognizeOne(arrayPaths);
 
-                if (result.Equals("Error"))
-                    NotRecognized.Add(rect);
+
+            for (int i = 0; i < notRecognized.Count; i++)
+            {
+                if (results[i].Equals("Error"))
+                    NotRecognized.Add(notRecognized[i]);
                 else
                 {
-                    Rectangle newRectangle = rect;
-                    newRectangle.label = result;
+                    Rectangle newRectangle = notRecognized[i];
+                    newRectangle.label = results[i];
 
                     //TODO: Do something with this
                     if (newRectangle.label == "-")
@@ -59,44 +60,55 @@ namespace MathRecognition
                         Recognized.Add(newRectangle);
                 }
 
-                deleteArrayFile(arrayPath);
+                deleteArrayFiles(arrayPaths);
             }
         }
-        private string createArrayFile(Rectangle rectangle, string tempDirectoryPath)
+        private string[] createArrayFiles(List<Rectangle> rectangles, string tempDirectoryPath)
         {
-            string arrayPath = tempDirectoryPath + Guid.NewGuid().ToString() + ".txt";
+            string[] arrayPaths = new string[rectangles.Count];
 
-            using (StreamWriter arrayFile = new StreamWriter(arrayPath))
+            for (int i = 0; i < rectangles.Count; i++)
             {
-                for (int h = 0; h < rectangle.Height; h++)
+                arrayPaths[i] = tempDirectoryPath + Guid.NewGuid().ToString() + ".txt";
+                
+                using (StreamWriter arrayFile = new StreamWriter(arrayPaths[i]))
                 {
-                    for (int w = 0; w < rectangle.Width; w++)
-                        arrayFile.Write(rectangle.Array[w, h].ToString() + " ");
-                    arrayFile.Write("\n");
+                    for (int h = 0; h < rectangles[i].Height; h++)
+                    {
+                        for (int w = 0; w < rectangles[i].Width; w++)
+                            arrayFile.Write(rectangles[i].Array[w, h].ToString() + " ");
+                        arrayFile.Write("\n");
+                    }
                 }
             }
-            return arrayPath;
+
+            return arrayPaths;
         }
-        private string recognizeOne(Rectangle rect, string arrayPath)
+        private string[] recognizeOne(string[] arrayPaths)
         {
+            string arrayPathsArg = "";
+            foreach (string arrayPath in arrayPaths)
+                arrayPathsArg += "\"" + arrayPath + "\" ";
+
             Process p = new Process(); 
             p.StartInfo.FileName = "python.exe";
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true; // DO NOT TOUCH THIS LINE! NOTHING CANT WORK WITHOUT IT!
             p.StartInfo.UseShellExecute = false; // make sure we can read the output from stdout
-            p.StartInfo.Arguments = "\"" + PYTHON_SCRIPT_DIRECTORY_PATH + PYTHON_SCRIPT_NAME + "\" \"" + arrayPath + "\""; 
+            p.StartInfo.Arguments = "\"" + PYTHON_SCRIPT_DIRECTORY_PATH + PYTHON_SCRIPT_NAME + "\" " + arrayPathsArg; 
             p.Start();
             StreamReader s = p.StandardOutput;
             String output = s.ReadToEnd();
-            string[] results = output.Split(new char[] { ' ' }); 
+            string[] results = output.Split(' '); 
             p.WaitForExit();
             p.Close();
 
-            return results[0];
+            return results;
         }
-        private void deleteArrayFile(string filepath)
+        private void deleteArrayFiles(string[] filepaths)
         {
-            File.Delete(filepath);
+            foreach (string filepath in filepaths)
+                File.Delete(filepath);
         }
     }
 }
