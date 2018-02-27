@@ -10,6 +10,7 @@ namespace MathRecognition
     {
         private const double CENTRE_DISPLACEMENT_COEFFICIENT = 0.1;
         private const double HIGHT_COEFFICIENT_FAULT = 0.2;
+        private const double HEIGHT_COEFFICIENT_FOR_POSITION_DETECTION = 0.2;
 
         public static List<List<Symbol>> CreateBaselines(List<Rectangle> rectangles, string symbolsFilename, 
                 double centreDisplacementCoefficient = CENTRE_DISPLACEMENT_COEFFICIENT)
@@ -85,12 +86,16 @@ namespace MathRecognition
         {
             double sum = 0;
             foreach (Symbol symbol in symbols)
-                sum += symbol.HeightCoefficient;
+                if ((symbol.MainRectangle.label != "-") && (symbol.MainRectangle.label != "\\frac"))
+                    sum += symbol.HeightCoefficient;
 
             return sum / symbols.Count;
         }
         public static int FindMainBaselineIndex(List<List<Symbol>> baselines, double hightCoefficientFault = HIGHT_COEFFICIENT_FAULT)
         {
+            return 0;
+            
+            //TODO: Think about it
             int index = -1;
             double maxCoefficient = -1;
 
@@ -328,13 +333,13 @@ namespace MathRecognition
             { 
                 int index = -1;
 
-                if (getBaselineAverageY(baseline) < symbol.TopLeftY)
+                if ((getBaselineAverageY(baseline) < symbol.MainCentreY) && (findLeftBorder(baseline) < symbol.MainCentreX))
                     index = 0;
-                else if ((getBaselineAverageY(baseline) < symbol.MainCentreY) && (getBaselineAverageY(baseline) > symbol.TopLeftY))
+                else if ((getBaselineAverageY(baseline) < symbol.MainCentreY) && (findLeftBorder(baseline) > symbol.MainCentreX))
                     index = 1;
-                else if ((getBaselineAverageY(baseline) > symbol.MainCentreY) && (getBaselineAverageY(baseline) < symbol.TopLeftY + symbol.Height))
+                else if ((getBaselineAverageY(baseline) > symbol.MainCentreY) && (findLeftBorder(baseline) > symbol.MainCentreX))
                     index = 3;
-                else if (getBaselineAverageY(baseline) > symbol.TopLeftY + symbol.Height)
+                else if ((getBaselineAverageY(baseline) > symbol.MainCentreY) && (findLeftBorder(baseline) < symbol.MainCentreX))
                     index = 4;
 
                 if (index != -1)

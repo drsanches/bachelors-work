@@ -12,7 +12,7 @@ namespace MathRecognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\ij.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\test2.png";
         private const string SYMBOLS_FILENAME = "..\\..\\..\\..\\dataset\\Symbols-with-point.json";
         Bitmap bitmap;
         Graphics g;
