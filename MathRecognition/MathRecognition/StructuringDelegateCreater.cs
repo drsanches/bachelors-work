@@ -178,8 +178,8 @@ namespace MathRecognition
         { 
             if (symbol.MainRectangle.label == "-")
             {
-                List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, (int)(symbol.Width / 2));
-                List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, symbol, (int)(symbol.Width / 2));
+                List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, symbol.Width * 2);
+                List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, symbol, symbol.Width * 2);
 
                 return (bottomSymbols.Count != 0) && (upperSymbols.Count != 0);
             }
