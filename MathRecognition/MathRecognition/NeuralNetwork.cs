@@ -19,6 +19,11 @@ namespace MathRecognition
             Recognized = new List<Rectangle>();
         }
         public abstract void RecognizeList(List<Rectangle> notRecognized);
+        public void ClearLists()
+        {
+            Recognized.Clear();
+            NotRecognized.Clear();
+        }
     }
 
     public class NeuralNetwork : NeuralNetworkAbstractFactory

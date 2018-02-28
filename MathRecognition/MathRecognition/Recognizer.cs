@@ -42,8 +42,7 @@ namespace MathRecognition
                 foreach (Rectangle rect in neuralNetwork.NotRecognized)
                     NotRecognized = sumLists(NotRecognized, whenIsNotRecognized(rect));
 
-                neuralNetwork.Recognized.Clear();
-                neuralNetwork.NotRecognized.Clear();
+                neuralNetwork.ClearLists();
             }
 
             string latexCode = structuring.getLatexCode(Recognized, CanNotBeRecognized, neuralNetwork);

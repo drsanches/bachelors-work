@@ -5,7 +5,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.callbacks import TensorBoard
 
 
-dataset_filename = "..\\dataset\\dataset-32x32-with-point.npz"
+dataset_filename = "..\\dataset\\dataset-32x32.npz"
 
 # Load dataset
 dataset = numpy.load(dataset_filename)

@@ -34,7 +34,7 @@ namespace MathRecognition
         }
         private void runStructuring(ref List<List<Symbol>> baselines)
         {
-            int mainBaselineIndex = Baselines.FindMainBaselineIndex(baselines);
+            int mainBaselineIndex = 0;
             List<Symbol> mainBaseline = baselines[mainBaselineIndex];
             baselines.RemoveAt(mainBaselineIndex);
             Dictionary<Symbol, List<List<Symbol>>> splitedBaselines = Baselines.GetSplittedIntoGroupsBaselines(baselines, mainBaseline);

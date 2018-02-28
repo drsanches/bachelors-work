@@ -9,8 +9,6 @@ namespace MathRecognition
     public static class Baselines
     {
         private const double CENTRE_DISPLACEMENT_COEFFICIENT = 0.1;
-        private const double HIGHT_COEFFICIENT_FAULT = 0.2;
-        private const double HEIGHT_COEFFICIENT_FOR_POSITION_DETECTION = 0.2;
 
         public static List<List<Symbol>> CreateBaselines(List<Rectangle> rectangles, string symbolsFilename, 
                 double centreDisplacementCoefficient = CENTRE_DISPLACEMENT_COEFFICIENT)
@@ -81,32 +79,6 @@ namespace MathRecognition
                 return true;
             else
                 return false;
-        }
-        public static double getAverageHeightCoefficient(List<Symbol> symbols)
-        {
-            double sum = 0;
-            foreach (Symbol symbol in symbols)
-                if ((symbol.MainRectangle.label != "-") && (symbol.MainRectangle.label != "\\frac"))
-                    sum += symbol.HeightCoefficient;
-
-            return sum / symbols.Count;
-        }
-        public static int FindMainBaselineIndex(List<List<Symbol>> baselines, double hightCoefficientFault = HIGHT_COEFFICIENT_FAULT)
-        {
-            return 0;
-            
-            //TODO: Think about it
-            int index = -1;
-            double maxCoefficient = -1;
-
-            for (int i = 0; i < baselines.Count; i++)
-                if (getAverageHeightCoefficient(baselines[i]) - hightCoefficientFault > maxCoefficient)
-                {
-                    maxCoefficient = getAverageHeightCoefficient(baselines[i]);
-                    index = i;
-                }
-
-            return index;
         }
         public static Dictionary<Symbol, List<List<Symbol>>> GetSplittedIntoGroupsBaselines(List<List<Symbol>> baselines, List<Symbol> mainBaseline)
         {

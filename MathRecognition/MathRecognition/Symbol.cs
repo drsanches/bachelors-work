@@ -15,7 +15,6 @@ namespace MathRecognition
         public int Height;
         public int MainCentreX;
         public int MainCentreY;
-        public double HeightCoefficient;
         public Rectangle MainRectangle;
         public List<List<Symbol>>[] Baselines;
 
@@ -29,7 +28,6 @@ namespace MathRecognition
             Baselines = new List<List<Symbol>>[5];
             MainCentreX = rectangle.GetCentrePoint().X;
             MainCentreY = rectangle.GetCentrePoint().Y + (int)(Height * getCenterYShift(rectangle.label, symbolsFilename));
-            HeightCoefficient = Height / (double)getRelativeHeignt(rectangle, symbolsFilename);
         }
         public Symbol plus(Symbol b, string symbolsFilename)
         {
@@ -58,29 +56,6 @@ namespace MathRecognition
                 element = element.Next;
             }
             return 0;
-        }
-        private int getRelativeHeignt(Rectangle rectangle, string symbolsFilename)
-        {
-            System.IO.StreamReader file = new System.IO.StreamReader(@symbolsFilename);
-            string jsonString = file.ReadToEnd();
-            file.Close();
-
-            JObject fileJObject = JObject.Parse(jsonString);
-            JToken element = fileJObject.GetValue("SymbolsHeights").First;
-            while (element != null)
-            {
-                JObject elementJObject = JObject.Parse(element.ToString());
-                string symbol = elementJObject.GetValue("Symbol").ToString();
-
-                if (symbol == rectangle.label)
-                {
-                    int relativeHeight = int.Parse(elementJObject.GetValue("Height").ToString());
-                    return relativeHeight;
-                }
-
-                element = element.Next;
-            }
-            return rectangle.Height;
         }
     }
 }

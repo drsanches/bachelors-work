@@ -5,7 +5,7 @@ from functions import label_functions
 import numpy
 
 
-filename = "..\\dataset\\symbols-with-point.json"
+filename = "..\\dataset\\symbols.json"
 input_width = 32
 input_height = 32
 
@@ -16,7 +16,8 @@ try:
         path_steps = script_name.split("\\")
         script_name = path_steps[len(path_steps) - 1]
         script_directory_path = str(sys.argv[0]).replace(script_name, "")
-
+        if (len(sys.argv) < 2):
+            raise "Input arguments error";
         array_paths = []
         for i in range(1, len(sys.argv)):
             array_paths.append(str(sys.argv[i]))
@@ -29,16 +30,16 @@ try:
     inputs = []
     for array_path in array_paths:
         input = array_functions.read_array_from_file(array_path)
-        array_functions.array_to_image(input).show()
+        # array_functions.array_to_image(input).show()
         input = array_functions.input_array_scaling(input, (input_width, input_height), "Black")
-        array_functions.array_to_image(input).show()
+        # array_functions.array_to_image(input).show()
         input = input.reshape(1, input.shape[0], input.shape[1], 1)
         inputs.append(input)
 
 
     # Debug
     # data = numpy.load("..\\dataset\\dataset-32x32.npz")
-    # num = 140
+    # num = 41
     # input = data["X_test"][num]
     # print(data["Y_test"][num])
     # array_functions.array_to_image(input).show()

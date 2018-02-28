@@ -40,19 +40,14 @@ f.close()
 symbols = symbols_json["Symbols"]
 symbols = symbols.split(" ")
 
-symbols_heights = []
 count = 0
 for symbol in symbols:
-    heights_sum = 0
     for image_count in range(0, fonts_number):
         # Loading and initial transformation
         image = Image.open(images_directory + "\\" + str(count) + "-" + str(image_count) + ".png")
         image = image.convert('L')
         image = array_functions.image_diagonal_mapping(image)
         image = array_functions.cut_symbol(image)
-
-        heights_sum += image.height
-
         image = array_functions.input_image_scaling(image, (input_width, input_height), "White")
 
         # Normal
@@ -103,11 +98,6 @@ for symbol in symbols:
         X_test.append(array)
         Y_test.append(count)
 
-    symbol_height = {}
-    symbol_height["Symbol"] = symbol
-    symbol_height["Height"] = int(heights_sum / image_count)
-    symbols_heights.append(symbol_height)
-
     print(str(count) + ": " + symbol)
     count += 1
 
@@ -115,11 +105,6 @@ X_train = numpy.array(X_train).astype('float32')
 Y_train = np_utils.to_categorical(Y_train, count)
 X_test = numpy.array(X_test).astype('float32')
 Y_test = np_utils.to_categorical(Y_test, count)
-
-symbols_json["SymbolsHeights"] = symbols_heights
-f = open(filename, 'w')
-json.dump(symbols_json, f)
-f.close
 
 print(X_train.shape)
 print(Y_train.shape)

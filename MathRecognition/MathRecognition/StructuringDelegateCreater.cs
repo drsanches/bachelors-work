@@ -214,7 +214,6 @@ namespace MathRecognition
                         }
 
                         newSymbol.MainRectangle.label = operatorCode;
-                        newSymbol.HeightCoefficient = Baselines.getAverageHeightCoefficient(deletingSymbols);
                         Baselines.AddInBaselines(ref baselines, newSymbol, symbolsFilename);
 
                         string stringForInsert = new String(' ', operatorLength);
