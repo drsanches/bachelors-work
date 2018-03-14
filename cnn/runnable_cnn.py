@@ -30,9 +30,9 @@ try:
     inputs = []
     for array_path in array_paths:
         input = array_functions.read_array_from_file(array_path)
-        # array_functions.array_to_image(input).show()
+        array_functions.array_to_image(input).show()
         input = array_functions.input_array_scaling(input, (input_width, input_height), "Black")
-        # array_functions.array_to_image(input).show()
+        array_functions.array_to_image(input).show()
         input = input.reshape(1, input.shape[0], input.shape[1], 1)
         inputs.append(input)
 

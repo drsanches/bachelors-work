@@ -28,67 +28,15 @@ namespace MathRecognition
         }
         public string Recognize(Rectangle rectangle)
         {
-            NotRecognized.Add(rectangle);
+            NotRecognized = segmentation.MakeFullSegmentation(rectangle);
+            neuralNetwork.RecognizeList(NotRecognized);
 
-            while (NotRecognized.Count > 0)
-            {
-                NotRecognized = makeSegmentation(NotRecognized);
-                neuralNetwork.RecognizeList(NotRecognized);
-                NotRecognized.Clear();
-
-                foreach (Rectangle rect in neuralNetwork.Recognized)
-                    whenRecognized(rect);
-
-                foreach (Rectangle rect in neuralNetwork.NotRecognized)
-                    NotRecognized = sumLists(NotRecognized, whenIsNotRecognized(rect));
-
-                neuralNetwork.ClearLists();
-            }
-
+            Recognized = neuralNetwork.Recognized;
+            CanNotBeRecognized = neuralNetwork.NotRecognized;
+            
             string latexCode = structuring.getLatexCode(Recognized, CanNotBeRecognized, neuralNetwork);
 
             return latexCode;
-        }
-        private List<Rectangle> makeSegmentation(List<Rectangle> rectangles)
-        {
-            List<Rectangle> notRecognized = new List<Rectangle>();
-
-            foreach (Rectangle rect in rectangles)
-                notRecognized = sumLists(notRecognized, segmentation.MakeSegmentation(rect));
-
-            return notRecognized;
-        }
-        private void whenRecognized(Rectangle rectangle)
-        {
-            Recognized.Add(rectangle);
-        }
-        private List<Rectangle> whenIsNotRecognized(Rectangle rectangle)
-        {
-            List<Rectangle> notRecognized = new List<Rectangle>();
-
-            if (!segmentation.IsSeparableByLines(rectangle))
-            {
-                if (segmentation.IsSeparableByWave(rectangle))
-                {
-                    List<Rectangle> partsFromWave = segmentation.WaveSegmentation(rectangle);
-                    foreach (Rectangle pfw in partsFromWave)
-                        notRecognized.Add(pfw);
-                }
-                else
-                    CanNotBeRecognized.Add(rectangle);
-            }
-            else
-                NotRecognized.Add(rectangle);
-            return notRecognized;
-        }
-        private List<Rectangle> sumLists(List<Rectangle> a, List<Rectangle> b)
-        {
-            List<Rectangle> s = new List<Rectangle>();
-            foreach (Rectangle rect in a)
-                s.Add(rect);
-            foreach (Rectangle rect in b)
-                s.Add(rect);
-            return s;
         }
     }
 }

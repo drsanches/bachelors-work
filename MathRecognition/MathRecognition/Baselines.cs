@@ -323,24 +323,6 @@ namespace MathRecognition
             }
             return newSymbol;
         }
-        private static Dictionary<String, List<List<Symbol>>> separateByBaseline(List<List<Symbol>> baselines, int baselineIndex)
-        {
-            List<List<Symbol>> up = new List<List<Symbol>>();
-            List<List<Symbol>> down = new List<List<Symbol>>();
-            double mainBaselineAverageY = getBaselineAverageY(baselines[baselineIndex]);
-
-            for (int i = 0; i < baselines.Count; i++)
-                if (i != baselineIndex)
-                    if (getBaselineAverageY(baselines[i]) < mainBaselineAverageY)
-                        up.Add(baselines[i]);
-                    else
-                        down.Add(baselines[i]);
-
-            Dictionary<String, List<List<Symbol>>> response = new Dictionary<string, List<List<Symbol>>>();
-            response.Add("up", up);
-            response.Add("down", down);
-            return response;
-        }
         private static double getBaselineAverageY(List<Symbol> baseline)
         {
             double sum = 0;
@@ -370,10 +352,10 @@ namespace MathRecognition
                     {
                         if ((symbol.MainCentreY > mainSymbol.MainCentreY) &&
                                 (symbol.TopLeftY < mainSymbol.TopLeftY + mainSymbol.Height + depth) &&
-                                (((symbol.TopLeftX > mainSymbol.TopLeftX) && (symbol.TopLeftX < mainSymbol.TopLeftX + mainSymbol.Width)) ||
-                                ((symbol.TopLeftX + symbol.Width > mainSymbol.TopLeftX) && (symbol.TopLeftX + symbol.Width < mainSymbol.TopLeftX + mainSymbol.Width)) ||
-                                ((mainSymbol.TopLeftX > symbol.TopLeftX) && (mainSymbol.TopLeftX < symbol.TopLeftX + symbol.Width)) ||
-                                ((mainSymbol.TopLeftX + mainSymbol.Width > symbol.TopLeftX) && (mainSymbol.TopLeftX + mainSymbol.Width < symbol.TopLeftX + symbol.Width))))
+                                (((symbol.TopLeftX >= mainSymbol.TopLeftX) && (symbol.TopLeftX <= mainSymbol.TopLeftX + mainSymbol.Width)) ||
+                                ((symbol.TopLeftX + symbol.Width >= mainSymbol.TopLeftX) && (symbol.TopLeftX + symbol.Width <= mainSymbol.TopLeftX + mainSymbol.Width)) ||
+                                ((mainSymbol.TopLeftX >= symbol.TopLeftX) && (mainSymbol.TopLeftX <= symbol.TopLeftX + symbol.Width)) ||
+                                ((mainSymbol.TopLeftX + mainSymbol.Width >= symbol.TopLeftX) && (mainSymbol.TopLeftX + mainSymbol.Width <= symbol.TopLeftX + symbol.Width))))
                             bottomSymbols.Add(symbol);
                     }
                 }
@@ -392,10 +374,10 @@ namespace MathRecognition
                     {
                         if ((symbol.MainCentreY < mainSymbol.MainCentreY) &&
                                 (symbol.TopLeftY + symbol.Height > mainSymbol.TopLeftY - depth) &&
-                                (((symbol.TopLeftX > mainSymbol.TopLeftX) && (symbol.TopLeftX < mainSymbol.TopLeftX + mainSymbol.Width)) ||
-                                ((symbol.TopLeftX + symbol.Width > mainSymbol.TopLeftX) && (symbol.TopLeftX + symbol.Width < mainSymbol.TopLeftX + mainSymbol.Width)) ||
-                                ((mainSymbol.TopLeftX > symbol.TopLeftX) && (mainSymbol.TopLeftX < symbol.TopLeftX + symbol.Width)) ||
-                                ((mainSymbol.TopLeftX + mainSymbol.Width > symbol.TopLeftX) && (mainSymbol.TopLeftX + mainSymbol.Width < symbol.TopLeftX + symbol.Width))))
+                                (((symbol.TopLeftX >= mainSymbol.TopLeftX) && (symbol.TopLeftX <= mainSymbol.TopLeftX + mainSymbol.Width)) ||
+                                ((symbol.TopLeftX + symbol.Width >= mainSymbol.TopLeftX) && (symbol.TopLeftX + symbol.Width <= mainSymbol.TopLeftX + mainSymbol.Width)) ||
+                                ((mainSymbol.TopLeftX >= symbol.TopLeftX) && (mainSymbol.TopLeftX <= symbol.TopLeftX + symbol.Width)) ||
+                                ((mainSymbol.TopLeftX + mainSymbol.Width >= symbol.TopLeftX) && (mainSymbol.TopLeftX + mainSymbol.Width <= symbol.TopLeftX + symbol.Width))))
                             upperSymbols.Add(symbol);
                     }
                 }

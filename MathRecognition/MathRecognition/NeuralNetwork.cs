@@ -37,7 +37,7 @@ namespace MathRecognition
         public override void RecognizeList(List<Rectangle> notRecognized)
         {
             string[] arrayPaths = createArrayFiles(notRecognized, TEMP_DIRECTORY_PATH);
-            string[] results = recognizeOne(arrayPaths);
+            string[] results = recognizeAll(arrayPaths);
 
 
             for (int i = 0; i < notRecognized.Count; i++)
@@ -48,21 +48,7 @@ namespace MathRecognition
                 {
                     Rectangle newRectangle = notRecognized[i];
                     newRectangle.label = results[i];
-
-                    //TODO: Do something with this
-                    if (newRectangle.label == "-")
-                    {
-                        Segmentation segmentation = new Segmentation();
-                        if (segmentation.IsSeparableByLines(newRectangle))
-                        {
-                            newRectangle.label = "";
-                            NotRecognized.Add(newRectangle);
-                        }
-                        else
-                            Recognized.Add(newRectangle);
-                    }
-                    else
-                        Recognized.Add(newRectangle);
+                    Recognized.Add(newRectangle);
                 }
 
                 deleteArrayFiles(arrayPaths);
@@ -89,7 +75,7 @@ namespace MathRecognition
 
             return arrayPaths;
         }
-        private string[] recognizeOne(string[] arrayPaths)
+        private string[] recognizeAll(string[] arrayPaths)
         {
             string arrayPathsArg = "";
             foreach (string arrayPath in arrayPaths)
