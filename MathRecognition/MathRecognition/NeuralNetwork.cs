@@ -29,9 +29,8 @@ namespace MathRecognition
 
     public class NeuralNetwork : NeuralNetworkAbstractFactory
     {
-        private const string PYTHON_SCRIPT_DIRECTORY_PATH = "..\\..\\..\\..\\cnn\\";
-        private const string PYTHON_SCRIPT_NAME = "runnable_cnn.py";
-        private const string TEMP_DIRECTORY_PATH = "..\\..\\..\\..\\temp\\";
+        private string PYTHON_SCRIPT_FILEPATH = Properties.Resources.PYTHON_SCRIPT_FILEPATH;
+        private string TEMP_DIRECTORY_PATH = Properties.Resources.TEMP_DIRECTORY_PATH;
         public int processesCount = 4;
 
         public NeuralNetwork() : base()
@@ -117,9 +116,9 @@ namespace MathRecognition
             Process p = new Process(); 
             p.StartInfo.FileName = "python.exe";
             p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true; // DO NOT TOUCH THIS LINE! NOTHING CANT WORK WITHOUT IT!
-            p.StartInfo.UseShellExecute = false; // make sure we can read the output from stdout
-            p.StartInfo.Arguments = "\"" + PYTHON_SCRIPT_DIRECTORY_PATH + PYTHON_SCRIPT_NAME + "\" " + arrayPathsArg; 
+            p.StartInfo.RedirectStandardError = true; //DO NOT TOUCH THIS LINE! NOTHING CANT WORK WITHOUT IT!
+            p.StartInfo.UseShellExecute = false; //Make sure we can read the output from stdout
+            p.StartInfo.Arguments = "\"" + PYTHON_SCRIPT_FILEPATH + "\" " + arrayPathsArg; 
             p.Start();
             StreamReader s = p.StandardOutput;
             String output = s.ReadToEnd();

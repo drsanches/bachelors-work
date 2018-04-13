@@ -59,5 +59,23 @@ namespace MathRecognition.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ..\\..\\..\\..\\cnn\\runnable_cnn.py.
+        /// </summary>
+        internal static string PYTHON_SCRIPT_FILEPATH {
+            get {
+                return ResourceManager.GetString("PYTHON_SCRIPT_FILEPATH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ..\\..\\..\\..\\temp\\.
+        /// </summary>
+        internal static string TEMP_DIRECTORY_PATH {
+            get {
+                return ResourceManager.GetString("TEMP_DIRECTORY_PATH", resourceCulture);
+            }
+        }
     }
 }

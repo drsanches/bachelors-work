@@ -6,8 +6,8 @@ from keras.callbacks import TensorBoard
 
 
 dataset_filename = "..\\dataset\\dataset-32x32.npz"
-model_filepath = "cnn_data\\cnn14.json"
-weights_filepath = "cnn_data\\cnn14.h5"
+model_filepath = "cnn_data\\cnn15.json"
+weights_filepath = "cnn_data\\cnn15.h5"
 
 # Load dataset
 dataset = numpy.load(dataset_filename)

@@ -12,7 +12,9 @@ namespace MathRecognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\sqrt_frac_2.png";
+        private const string DIRECTORY_PATH = "..\\..\\..\\..\\Formulas\\";
+        //TODO fix: test2.png
+        private const string FILENAME = "brackets.png";
         private const string SYMBOLS_FILENAME = "..\\..\\..\\..\\dataset\\Symbols.json";
         Bitmap bitmap;
         Graphics g;
@@ -23,7 +25,7 @@ namespace MathRecognition
         {
             InitializeComponent();
 
-            bitmap = new Bitmap(@filename);
+            bitmap = new Bitmap(@DIRECTORY_PATH + FILENAME);
             g = Graphics.FromImage(bitmap);
 
             int[,] array = new int[bitmap.Width, bitmap.Height];

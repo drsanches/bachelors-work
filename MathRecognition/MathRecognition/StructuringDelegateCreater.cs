@@ -249,22 +249,23 @@ namespace MathRecognition
                 foreach (List<Symbol> baseline in softBaselines)
                 {
                     string stringOfBaseline = getStringOfBaseline(baseline);
-
                     int operatorLength = operatorCode.Length - 1;
                     int startIndex = stringOfBaseline.IndexOf(operatorCode.Substring(1, operatorLength), StringComparison.CurrentCultureIgnoreCase);
 
                     while (startIndex != -1)
                     {
-                        Symbol newSymbol = baseline[startIndex];
-                        deletingSymbols.Add(baseline[startIndex]);
+                        List<Symbol> symbolsBaseline = getSymbolsBaseline(baseline);
+                        Symbol newSymbol = symbolsBaseline[startIndex];
+                        deletingSymbols.Add(symbolsBaseline[startIndex]); 
 
                         for (int j = 1; j < operatorLength; j++)
                         {
-                            newSymbol = new Symbol(newSymbol.MainRectangle + baseline[startIndex + j].MainRectangle, symbolsFilename);
-                            deletingSymbols.Add(baseline[startIndex + j]);
+                            Rectangle newRectangle = newSymbol.MainRectangle + symbolsBaseline[startIndex + j].MainRectangle;
+                            newRectangle.label = operatorCode;
+                            newSymbol = new Symbol(newRectangle, symbolsFilename);
+                            deletingSymbols.Add(symbolsBaseline[startIndex + j]);
                         }
 
-                        newSymbol.MainRectangle.label = operatorCode;
                         Baselines.AddInBaselines(ref baselines, newSymbol, symbolsFilename);
 
                         string stringForInsert = new String(' ', operatorLength);
@@ -286,6 +287,16 @@ namespace MathRecognition
                 Baselines.SortBaselines(ref baselines);
             }
         }
+        private static List<Symbol> getSymbolsBaseline(List<Symbol> baseline)
+        {
+            List<Symbol> symbolsBaseline = new List<Symbol>();
+
+            foreach (Symbol symbol in baseline)
+                if (symbol.MainRectangle.label[0] != '\\')
+                    symbolsBaseline.Add(symbol);
+
+            return symbolsBaseline;
+        }
         private static string[] getAllOperators()
         {
             System.IO.StreamReader file = new System.IO.StreamReader(symbolsFilename);
@@ -302,7 +313,8 @@ namespace MathRecognition
             string stringOfBaseline = "";
 
             foreach (Symbol symbol in baseline)
-                stringOfBaseline += symbol.MainRectangle.label;
+                if (symbol.MainRectangle.label[0] != '\\')
+                    stringOfBaseline += symbol.MainRectangle.label;
 
             return stringOfBaseline;
         }
