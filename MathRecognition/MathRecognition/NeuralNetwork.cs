@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics; 
 using System.IO;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace MathRecognition
 {
@@ -31,10 +32,42 @@ namespace MathRecognition
         private const string PYTHON_SCRIPT_DIRECTORY_PATH = "..\\..\\..\\..\\cnn\\";
         private const string PYTHON_SCRIPT_NAME = "runnable_cnn.py";
         private const string TEMP_DIRECTORY_PATH = "..\\..\\..\\..\\temp\\";
+        public int processesCount = 4;
 
         public NeuralNetwork() : base()
         { }
         public override void RecognizeList(List<Rectangle> notRecognized)
+        {
+            List<Rectangle>[] lists = cutListOfRectangles(notRecognized);
+            Thread[] threads = new Thread[lists.Length];
+            
+            for (int i = 0; i < processesCount; i++)
+            {
+                threads[i] = new Thread(new ParameterizedThreadStart(threadFunction));
+                threads[i].Name = "Thread-" + i.ToString();
+                threads[i].Start(lists[i]);
+            }
+
+            for (int i = 0; i < processesCount; i++)
+                threads[i].Join();
+        }
+        private void threadFunction(Object obj)
+        {
+            RecognizeListForOneProcess((List<Rectangle>)obj);
+        }
+        private List<Rectangle>[] cutListOfRectangles(List<Rectangle> notRecognized)
+        {
+            List<Rectangle>[] lists = new List<Rectangle>[processesCount];
+            
+            for (int i = 0; i < lists.Length; i++)
+                lists[i] = new List<Rectangle>();
+
+            for (int i = 0; i < notRecognized.Count; i++)
+                lists[i % processesCount].Add(notRecognized[i]);
+
+            return lists;
+        }
+        private void RecognizeListForOneProcess(List<Rectangle> notRecognized)
         {
             string[] arrayPaths = createArrayFiles(notRecognized, TEMP_DIRECTORY_PATH);
             string[] results = recognizeAll(arrayPaths);
