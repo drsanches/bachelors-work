@@ -6,6 +6,8 @@ from keras.callbacks import TensorBoard
 
 
 dataset_filename = "..\\dataset\\dataset-32x32.npz"
+model_filepath = "cnn_data\\cnn14.json"
+weights_filepath = "cnn_data\\cnn14.h5"
 
 # Load dataset
 dataset = numpy.load(dataset_filename)
@@ -59,7 +61,7 @@ print("Accuracy on test data: %.2f%%" % (scores[1]*100))
 
 # Saving
 json_model = model.to_json()
-json_file = open("cnn_data\\cnn13.json", "w")
+json_file = open(model_filepath, "w")
 json_file.write(json_model)
 json_file.close()
-model.save_weights("cnn_data\\cnn13.h5")
+model.save_weights(weights_filepath)

@@ -49,14 +49,14 @@ namespace MathRecognition
                             Symbol bottomSymbol = bottomSymbols.First();
                             List<Rectangle> list = new List<Rectangle>();
                             list.Add(symbol.MainRectangle + bottomSymbol.MainRectangle);
+                            neuralNetwork.ClearLists();
                             neuralNetwork.RecognizeList(list);
                             if (neuralNetwork.Recognized.Count == 1)
                             {
                                 deletingSymbols.Add(symbol);
                                 deletingSymbols.Add(bottomSymbol);
                                 Baselines.AddInBaselines(ref baselines, neuralNetwork.Recognized.First(), symbolsFilename);
-                                neuralNetwork.Recognized.Clear();
-                                neuralNetwork.NotRecognized.Clear();
+                                neuralNetwork.ClearLists();
                             }
                         }
                     }

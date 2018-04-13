@@ -12,7 +12,7 @@ namespace MathRecognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\test6.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\article_example1.png";
         private const string SYMBOLS_FILENAME = "..\\..\\..\\..\\dataset\\Symbols.json";
         Bitmap bitmap;
         Graphics g;
@@ -28,11 +28,9 @@ namespace MathRecognition
 
             int[,] array = new int[bitmap.Width, bitmap.Height];
             for (int i = 0; i < bitmap.Width; i++)
-            for (int j = 0; j < bitmap.Height; j++)
-            {
-                if ((int)bitmap.GetPixel(i, j).GetBrightness() <= 0.2)
-                    array[i, j] = 1;
-            }
+                for (int j = 0; j < bitmap.Height; j++)
+                    if ((int)bitmap.GetPixel(i, j).GetBrightness() <= 0.2)
+                        array[i, j] = 1;
 
             Segmentation segmentation = new Segmentation();
             NeuralNetwork cnn = new NeuralNetwork();
@@ -50,7 +48,7 @@ namespace MathRecognition
 
             this.Height = bitmap.Height + 30 + textBox1.Height;
             this.Width = bitmap.Width + 5;
-            
+
 
             foreach (Rectangle r in recognizer.Recognized)
             {
@@ -59,19 +57,13 @@ namespace MathRecognition
             }
 
             foreach (Rectangle r in recognizer.NotRecognized)
-            {
                 e.Graphics.DrawRectangle(new Pen(Color.Yellow), r.TopLeftX, r.TopLeftY, r.Width, r.Height);
-            }
 
             foreach (Rectangle r in recognizer.CanNotBeRecognized)
-            {
                 e.Graphics.DrawRectangle(new Pen(Color.Red), r.TopLeftX, r.TopLeftY, r.Width, r.Height);
-            }
 
             foreach (Rectangle r in recognizer.Recognized)
-            {
                 e.Graphics.DrawString(r.label, new Font("Arial", 16), new SolidBrush(Color.Red), r.TopLeftX, r.TopLeftY);
-            }
         }
         private void Form1_Activated(object sender, EventArgs e)
         {

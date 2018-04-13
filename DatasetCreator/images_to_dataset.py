@@ -17,14 +17,12 @@ def get_final_array(image):
 try:
     filename = sys.argv[1]
     images_directory = sys.argv[2]
-    fonts_number = int(sys.argv[3])
-    input_width = int(sys.argv[4])
-    input_height = int(sys.argv[5])
-    output_filename = sys.argv[6]
+    input_width = int(sys.argv[3])
+    input_height = int(sys.argv[4])
+    output_filename = sys.argv[5]
 except:
     filename = "..\dataset\symbols.json"
     images_directory = "..\dataset\images"
-    fonts_number = 5
     input_width = 32
     input_height = 32
     output_filename = "..\dataset\dataset-32x32.npz"
@@ -42,61 +40,69 @@ symbols = symbols.split(" ")
 
 count = 0
 for symbol in symbols:
-    for image_count in range(0, fonts_number):
-        # Loading and initial transformation
-        image = Image.open(images_directory + "\\" + str(count) + "-" + str(image_count) + ".png")
-        image = image.convert('L')
-        image = array_functions.image_diagonal_mapping(image)
-        image = array_functions.cut_symbol(image)
-        image = array_functions.input_image_scaling(image, (input_width, input_height), "White")
+    is_exist = True
+    image_count = 0
+    while (is_exist):
+        try:
+            # Loading and initial transformation
+            image = Image.open(images_directory + "\\" + str(count) + "-" + str(image_count) + ".png")
+            image = image.convert('L')
+            image = array_functions.image_diagonal_mapping(image)
+            image = array_functions.cut_symbol(image)
+            image = array_functions.input_image_scaling(image, (input_width, input_height), "White")
 
-        # Normal
-        array = get_final_array(image)
-        X_train.append(array)
-        Y_train.append(count)
+            # Normal
+            array = get_final_array(image)
+            X_train.append(array)
+            Y_train.append(count)
 
-        # Rotated
-        array = get_final_array(array_functions.rotate(image, 3))
-        X_train.append(array)
-        Y_train.append(count)
-        array = get_final_array(array_functions.rotate(image, -3))
-        X_train.append(array)
-        Y_train.append(count)
-        array = get_final_array(array_functions.rotate(image, 5))
-        X_train.append(array)
-        Y_train.append(count)
-        array = get_final_array(array_functions.rotate(image, -5))
-        X_train.append(array)
-        Y_train.append(count)
+            # Rotated
+            array = get_final_array(array_functions.rotate(image, 3))
+            X_train.append(array)
+            Y_train.append(count)
+            array = get_final_array(array_functions.rotate(image, -3))
+            X_train.append(array)
+            Y_train.append(count)
+            array = get_final_array(array_functions.rotate(image, 5))
+            X_train.append(array)
+            Y_train.append(count)
+            array = get_final_array(array_functions.rotate(image, -5))
+            X_train.append(array)
+            Y_train.append(count)
 
-        # Noise
-        array = get_final_array(array_functions.random_dots(image, 20))
-        X_train.append(array)
-        Y_train.append(count)
-        array = get_final_array(array_functions.random_dots(image, 50))
-        X_train.append(array)
-        Y_train.append(count)
+            # Noise
+            array = get_final_array(array_functions.random_dots(image, 20))
+            X_train.append(array)
+            Y_train.append(count)
+            array = get_final_array(array_functions.random_dots(image, 50))
+            X_train.append(array)
+            Y_train.append(count)
 
-        # Scaling
-        array = get_final_array(array_functions.scaling(image, (0.8, 0.8)))
-        X_train.append(array)
-        Y_train.append(count)
-        array = get_final_array(array_functions.scaling(image, (1.2, 1.2)))
-        X_train.append(array)
-        Y_train.append(count)
+            # Scaling
+            array = get_final_array(array_functions.scaling(image, (0.8, 0.8)))
+            X_train.append(array)
+            Y_train.append(count)
+            array = get_final_array(array_functions.scaling(image, (1.2, 1.2)))
+            X_train.append(array)
+            Y_train.append(count)
 
-        # Deformation
-        array = get_final_array(array_functions.deformation(image, (1, 0.8), "White"))
-        X_train.append(array)
-        Y_train.append(count)
-        array = get_final_array(array_functions.deformation(image, (0.8, 1), "White"))
-        X_train.append(array)
-        Y_train.append(count)
+            # Deformation
+            array = get_final_array(array_functions.deformation(image, (1, 0.8), "White"))
+            X_train.append(array)
+            Y_train.append(count)
+            array = get_final_array(array_functions.deformation(image, (0.8, 1), "White"))
+            X_train.append(array)
+            Y_train.append(count)
 
-        # Noise for test
-        array = get_final_array(array_functions.random_dots(image, 50))
-        X_test.append(array)
-        Y_test.append(count)
+            # Noise for test
+            array = get_final_array(array_functions.random_dots(image, 50))
+            X_test.append(array)
+            Y_test.append(count)
+
+            image_count += 1
+
+        except FileNotFoundError:
+            is_exist = False
 
     print(str(count) + ": " + symbol)
     count += 1

@@ -16,10 +16,9 @@ public class Main {
     static final String SCRIPT_FILENAME = "images_to_dataset.py";
     static final int WIDTH = 32;
     static final int HEIGHT = 32;
+    static final int SQRT_SPACES_COUNT = 5;
 
     public static void main(String[] args) {
-
-
         ArrayList<String> fonts = getFontsList();
 
         try {
@@ -27,14 +26,22 @@ public class Main {
             String[] symbols = jsonSymbols.getString("Symbols").split(" ");
 
             for (int i = 0; i < symbols.length; i++) {
-
-                for (int j = 0; j < fonts.size(); j++)
-                    createSymbolImage(symbols[i], fonts.get(j),IMAGES_DIRECTORY + "\\" + i + "-" + j + ".png");
+                if (symbols[i].equals("\\sqrt")) {
+                    String spaces = "";
+                    for (int k = 0; k < SQRT_SPACES_COUNT; k++) {
+                        spaces += "\\ ";
+                        for (int j = 0; j < fonts.size(); j++)
+                            createSymbolImage(symbols[i] + "{" + spaces + "}", fonts.get(j),
+                                    IMAGES_DIRECTORY + "\\" + i + "-" + String.valueOf(j * fonts.size() + k) + ".png");
+                    }
+                }
+                else
+                    for (int j = 0; j < fonts.size(); j++)
+                        createSymbolImage(symbols[i], fonts.get(j),IMAGES_DIRECTORY + "\\" + i + "-" + j + ".png");
 
                 System.out.println(symbols[i]);
             }
-
-            imagesToDataset(SCRIPT_FILENAME, SYMBOLS_FILENAME, IMAGES_DIRECTORY, fonts.size(), WIDTH, HEIGHT, OUTPUT_FILENAME);
+            imagesToDataset(SCRIPT_FILENAME, SYMBOLS_FILENAME, IMAGES_DIRECTORY, WIDTH, HEIGHT, OUTPUT_FILENAME);
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -73,10 +80,10 @@ public class Main {
         teXFormula.createPNG(TeXConstants.STYLE_DISPLAY, 50, filename, Color.white, Color.black);
     }
 
-    private static void imagesToDataset(String scriptFilename, String filename, String directory, int fontsCount,
+    private static void imagesToDataset(String scriptFilename, String filename, String directory,
                                         int width, int height, String outputFilename) throws Exception {
         Process process = new ProcessBuilder()
-                .command("python.exe", scriptFilename, filename, directory, String.valueOf(fontsCount),
+                .command("python.exe", scriptFilename, filename, directory,
                         String.valueOf(width), String.valueOf(height), outputFilename)
                 .start();
         System.out.println(process.waitFor());
