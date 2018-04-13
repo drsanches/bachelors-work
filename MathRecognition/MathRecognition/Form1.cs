@@ -12,7 +12,7 @@ namespace MathRecognition
 {
     public partial class Form1 : Form
     {
-        const string filename = "..\\..\\..\\..\\Formulas\\article_example1.png";
+        const string filename = "..\\..\\..\\..\\Formulas\\sqrt_frac_2.png";
         private const string SYMBOLS_FILENAME = "..\\..\\..\\..\\dataset\\Symbols.json";
         Bitmap bitmap;
         Graphics g;

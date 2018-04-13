@@ -22,6 +22,7 @@ namespace MathRecognition
 
             structuringDelegate += checkAllDotsForIJ;
             structuringDelegate += checkAllEquals;
+            structuringDelegate += checkAllSqrts;
             structuringDelegate += checkAllFracs;
             structuringDelegate += checkAllCompositeOperators;
 
@@ -125,9 +126,50 @@ namespace MathRecognition
 
             return equals;
         }
+        private static void checkAllSqrts(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
+        {
+            Symbol sqrt = getLeastEmptySqrt(baselines);
+            if (sqrt != null)
+            {
+                List<Symbol> innerSymbols = Baselines.FindInnerSymbols(baselines, sqrt);
+
+                sqrt.Baselines[2] = Baselines.CreateBaselines(innerSymbols, symbolsFilename);
+
+                foreach (List<Symbol> baseline in baselines)
+                    foreach (Symbol innerSymbol in innerSymbols)
+                        baseline.Remove(innerSymbol);
+                
+                baselines.RemoveAll(x => x.Count == 0);
+
+                checkAllSqrts(ref baselines, notRecognizedRectangles, neuralNetwork);
+            }
+        }
+        private static Symbol getLeastEmptySqrt(List<List<Symbol>> baselines)
+        {
+            Symbol leastEmptySqrt = null;
+
+            foreach (List<Symbol> baseline in baselines)
+                foreach (Symbol symbol in baseline)
+                {
+                    if ((symbol.MainRectangle.label == "\\sqrt") && (symbol.Baselines[2] == null))
+                    {
+                        if (leastEmptySqrt != null)
+                        {
+                            if (symbol.Width < leastEmptySqrt.Width)
+                                leastEmptySqrt = symbol;
+                        }
+                        else
+                        {
+                            leastEmptySqrt = symbol;
+                        }
+                    }
+                }
+
+            return leastEmptySqrt;
+        }
         private static void checkAllFracs(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
         {
-            Symbol frac = getBiggestFrac(baselines);
+            Symbol frac = getBiggestEmptyFrac(baselines);
             if (frac != null)
             {
                 List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, frac);
@@ -141,7 +183,7 @@ namespace MathRecognition
                 {
                     foreach (Symbol upperSymbol in upperSymbols)
                         baseline.Remove(upperSymbol);
-                    
+
                     foreach (Symbol bottomSymbol in bottomSymbols)
                         baseline.Remove(bottomSymbol);
                 }
@@ -149,9 +191,18 @@ namespace MathRecognition
 
                 checkAllFracs(ref frac.Baselines[0], notRecognizedRectangles, neuralNetwork);
                 checkAllFracs(ref frac.Baselines[4], notRecognizedRectangles, neuralNetwork);
+                checkAllFracs(ref baselines, notRecognizedRectangles, neuralNetwork);
+            }
+            else
+            {
+                foreach (List<Symbol> baseline in baselines)
+                    foreach (Symbol symbol in baseline)
+                        for (int i = 0; i < symbol.Baselines.Length; i++)
+                            if (symbol.Baselines[i] != null)
+                            checkAllFracs(ref symbol.Baselines[i], notRecognizedRectangles, neuralNetwork);
             }
         }
-        private static Symbol getBiggestFrac(List<List<Symbol>> baselines)
+        private static Symbol getBiggestEmptyFrac(List<List<Symbol>> baselines)
         {
             Symbol biggestFrac = null;
 

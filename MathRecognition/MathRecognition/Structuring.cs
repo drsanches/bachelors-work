@@ -73,6 +73,10 @@ namespace MathRecognition
 
             switch (getSymbolType(symbol, symbolsFilename))
             {
+                case "\\sqrt":
+                    latexCode += getBaselineLatexCode(symbol.Baselines[2][0], symbolsFilename);
+                    break;
+
                 case "\\frac":
                     latexCode += getBaselineLatexCode(symbol.Baselines[0][0], symbolsFilename);
                     latexCode += getBaselineLatexCode(symbol.Baselines[4][0], symbolsFilename);
@@ -133,6 +137,10 @@ namespace MathRecognition
         {
             if (symbol.MainRectangle.label == "\\frac")
                 return "\\frac";
+            else
+                if (symbol.MainRectangle.label == "\\sqrt")
+                    return "\\sqrt";
+
             
             System.IO.StreamReader file = new System.IO.StreamReader(@symbolsFilename);
             string jsonString = file.ReadToEnd();

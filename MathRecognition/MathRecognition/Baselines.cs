@@ -384,5 +384,23 @@ namespace MathRecognition
 
             return upperSymbols;
         }
+        public static List<Symbol> FindInnerSymbols(List<List<Symbol>> baselines, Symbol mainSymbol)
+        {
+            List<List<Symbol>> tmpBaselines = baselines;
+            List<Symbol> innerSymbols = new List<Symbol>();
+
+            foreach (List<Symbol> baseline in tmpBaselines)
+                foreach (Symbol symbol in baseline)
+                {
+                    if (symbol != mainSymbol)
+                    {
+                        if ((symbol.MainCentreX >= mainSymbol.TopLeftX) && (symbol.MainCentreX <= mainSymbol.TopLeftX + mainSymbol.Width) &&
+                            (symbol.MainCentreY >= mainSymbol.TopLeftY) && (symbol.MainCentreY <= mainSymbol.TopLeftY + mainSymbol.Height))
+                            innerSymbols.Add(symbol);
+                    }
+                }
+
+            return innerSymbols;
+        }
     }
 }
