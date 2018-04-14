@@ -31,6 +31,7 @@ namespace MathRecognition
     {
         private string PYTHON_SCRIPT_FILEPATH = Properties.Resources.PYTHON_SCRIPT_FILEPATH;
         private string TEMP_DIRECTORY_PATH = Properties.Resources.TEMP_DIRECTORY_PATH;
+        //TODO: Here may be multithreading bug caused by adding into one list.
         public int processesCount = 4;
 
         public NeuralNetwork() : base()
@@ -49,6 +50,8 @@ namespace MathRecognition
 
             for (int i = 0; i < processesCount; i++)
                 threads[i].Join();
+
+            Recognized.Sort((a, b) => a.TopLeftX.CompareTo(b.TopLeftX));
         }
         private void threadFunction(Object obj)
         {

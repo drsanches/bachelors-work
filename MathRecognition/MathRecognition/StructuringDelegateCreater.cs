@@ -44,7 +44,13 @@ namespace MathRecognition
                 foreach (Symbol symbol in baseline)
                     if (symbol.MainRectangle.label == ".")
                     {
-                        List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, symbol.Height * 5);
+                        List<Symbol> sqrtBottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, symbol.Height * 5);
+                        List<Symbol> bottomSymbols = new List<Symbol>();
+                        
+                        foreach (Symbol sqrtBottomSymbol in sqrtBottomSymbols)
+                            if (sqrtBottomSymbol.MainRectangle.label != "\\sqrt")
+                                bottomSymbols.Add(sqrtBottomSymbol);
+
                         if (bottomSymbols.Count == 1)
                         {
                             Symbol bottomSymbol = bottomSymbols.First();
