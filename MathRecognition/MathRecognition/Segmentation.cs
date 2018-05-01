@@ -12,11 +12,7 @@ namespace MathRecognition
     {
         public SegmentationAbstractFactory()
         { }
-        public abstract List<Rectangle> MakeFullSegmentation(Rectangle rectangle);
-        public abstract List<Rectangle> MakeLineSegmentation(Rectangle rectangle);
-        public abstract List<Rectangle> MakeWaveSegmentation(Rectangle rectangle);
-        public abstract bool IsSeparableByLines(Rectangle rectangle);
-        public abstract bool IsSeparableByWave(Rectangle rectangle);
+        public abstract List<Rectangle> MakeSegmentation(Rectangle rectangle);
     }
 
     //TODO: cuts a little from below
@@ -24,30 +20,31 @@ namespace MathRecognition
     {
         public Segmentation() : base()
         { }
-        public override List<Rectangle> MakeFullSegmentation(Rectangle rectangle)
+        public override List<Rectangle> MakeSegmentation(Rectangle rectangle)
         {
             List<Rectangle> rectangles = new List<Rectangle>();
+            List<Rectangle> segmentedRectangles = new List<Rectangle>();
 
-            if (IsSeparableByLines(rectangle))
+            segmentedRectangles = MakeLineSegmentation(rectangle);
+
+            if (segmentedRectangles.Count == 1)
+                segmentedRectangles = MakeWaveSegmentation(rectangle);
+
+            if (segmentedRectangles.Count > 1)
             {
-                rectangles = sumLists(rectangles, MakeLineSegmentation(rectangle));
+                rectangles = sumLists(rectangles, segmentedRectangles);
             }
             else
-                if (IsSeparableByWave(rectangle))
-                {
-                    rectangles = sumLists(rectangles, MakeWaveSegmentation(rectangle));
-                }
-                else
-                {
-                    List<Rectangle> returningRectangles = new List<Rectangle>();
-                    returningRectangles.Add(rectangle);
-                    return returningRectangles;
-                }
+            {
+                List<Rectangle> returningRectangles = new List<Rectangle>();
+                returningRectangles.Add(rectangle);
+                return returningRectangles;
+            }
 
             List<Rectangle> newRectangles = new List<Rectangle>();
 
             foreach (Rectangle rect in rectangles)
-                newRectangles = sumLists(newRectangles, MakeFullSegmentation(rect));
+                newRectangles = sumLists(newRectangles, MakeSegmentation(rect));
 
             return newRectangles;
         }
@@ -60,7 +57,7 @@ namespace MathRecognition
                 s.Add(rect);
             return s;
         }
-        public override List<Rectangle> MakeLineSegmentation(Rectangle rectangle)
+        public List<Rectangle> MakeLineSegmentation(Rectangle rectangle)
         {
             Rectangle newRectangle = findFormula(rectangle);
             List<Rectangle> newRectangles = cutByLines(newRectangle, verticalLines(newRectangle), horizontalLines(newRectangle));
@@ -73,7 +70,7 @@ namespace MathRecognition
             }
             return newRectangles;
         }
-        public override List<Rectangle> MakeWaveSegmentation(Rectangle rectangle)
+        public List<Rectangle> MakeWaveSegmentation(Rectangle rectangle)
         {
             List<Rectangle> partsOfRectangles = new List<Rectangle>();
 
@@ -103,18 +100,6 @@ namespace MathRecognition
                     break;
             }
             return partsOfRectangles;
-        }
-        public override bool IsSeparableByLines(Rectangle rectangle)
-        {
-            return (verticalLines(rectangle).Count > 2) || (horizontalLines(rectangle).Count > 2);
-        }
-        public override bool IsSeparableByWave(Rectangle rectangle)
-        {
-            List<Rectangle> partsFromWave = MakeWaveSegmentation(rectangle);
-            if (partsFromWave.Count > 1)
-                return true;
-            else
-                return false;
         }
         private Rectangle findFormula(Rectangle rectangle)
         {

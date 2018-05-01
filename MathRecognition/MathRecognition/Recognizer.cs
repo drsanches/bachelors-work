@@ -26,7 +26,7 @@ namespace MathRecognition
         }
         public string Recognize(Rectangle rectangle)
         {
-            NotRecognized = segmentation.MakeFullSegmentation(rectangle);
+            NotRecognized = segmentation.MakeSegmentation(rectangle);
             neuralNetwork.RecognizeList(NotRecognized);
 
             Recognized = new List<Rectangle>(neuralNetwork.Recognized);
