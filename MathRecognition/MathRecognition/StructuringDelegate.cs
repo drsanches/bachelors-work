@@ -8,14 +8,14 @@ using Newtonsoft.Json.Linq;
 
 namespace MathRecognition
 {
-    public delegate void StructuringDelegate(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork);
+    public delegate void StructuringDelegate(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork);
 
-    public static class StructuringDelegateCreator
+    public static class StructuringDelegateFactory
     {
         private const double LINE_FAULT = 0.1;
         private static string symbolsFilename;
 
-        public static StructuringDelegate CreateDelegate(string symbolsJsonFilename)
+        public static StructuringDelegate Create(string symbolsJsonFilename)
         {
             symbolsFilename = symbolsJsonFilename;
             StructuringDelegate structuringDelegate = doNothing;
@@ -28,15 +28,15 @@ namespace MathRecognition
 
             return structuringDelegate;
         }
-        private static void doNothing(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
+        private static void doNothing(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork)
         { }
-        private static void checkAllDotsForIJ(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
+        private static void checkAllDotsForIJ(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork)
         {
             List<Symbol> deletingSymbols = new List<Symbol>();
             foreach (Rectangle rectangle in notRecognizedRectangles)
             {
                 Symbol newSymbol = new Symbol(rectangle, symbolsFilename);
-                Baselines.AddInBaselines(ref baselines, newSymbol, symbolsFilename);
+                BaselinesMethods.AddInBaselines(ref baselines, newSymbol, symbolsFilename);
                 deletingSymbols.Add(newSymbol);
             }
 
@@ -44,7 +44,7 @@ namespace MathRecognition
                 foreach (Symbol symbol in baseline)
                     if (symbol.MainRectangle.label == ".")
                     {
-                        List<Symbol> sqrtBottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, symbol.Height * 5);
+                        List<Symbol> sqrtBottomSymbols = BaselinesMethods.FindBottomSymbols(baselines, symbol, symbol.Height * 5);
                         List<Symbol> bottomSymbols = new List<Symbol>();
                         
                         foreach (Symbol sqrtBottomSymbol in sqrtBottomSymbols)
@@ -57,11 +57,11 @@ namespace MathRecognition
                             List<Rectangle> list = new List<Rectangle>();
                             list.Add(symbol.MainRectangle + bottomSymbol.MainRectangle);
                             neuralNetwork.RecognizeList(list);
-                            if (neuralNetwork.Recognized.Count == 1)
+                            if (neuralNetwork.GetRecognizedList().Count == 1)
                             {
                                 deletingSymbols.Add(symbol);
                                 deletingSymbols.Add(bottomSymbol);
-                                Baselines.AddInBaselines(ref baselines, neuralNetwork.Recognized.First(), symbolsFilename);
+                                BaselinesMethods.AddInBaselines(ref baselines, neuralNetwork.GetRecognizedList().First(), symbolsFilename);
                             }
                         }
                     }
@@ -71,9 +71,9 @@ namespace MathRecognition
                     baseline.RemoveAll(x => x == deletingSymbol);
             baselines.RemoveAll(x => x.Count == 0);
 
-            Baselines.SortBaselines(ref baselines);
+            BaselinesMethods.SortBaselines(ref baselines);
         }
-        private static void checkAllEquals(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
+        private static void checkAllEquals(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork)
         {
             Dictionary<Symbol, Symbol> equals = getAllPartsOfEquals(baselines);
 
@@ -92,10 +92,10 @@ namespace MathRecognition
             {
                 Rectangle newRectangle = key.MainRectangle + equals[key].MainRectangle;
                 newRectangle.label = "=";
-                Baselines.AddInBaselines(ref baselines, newRectangle, symbolsFilename);
+                BaselinesMethods.AddInBaselines(ref baselines, newRectangle, symbolsFilename);
             }
 
-            Baselines.SortBaselines(ref baselines);
+            BaselinesMethods.SortBaselines(ref baselines);
         }
         private static Dictionary<Symbol, Symbol> getAllPartsOfEquals(List<List<Symbol>> baselines)
         {
@@ -107,8 +107,8 @@ namespace MathRecognition
                 {
                     if (symbol.MainRectangle.label == "-")
                     {
-                        List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(tmpBaselines, symbol, (int)(symbol.Width / 2));
-                        List<Symbol> upperSymbols = Baselines.FindUpperSymbols(tmpBaselines, symbol, (int)(symbol.Width / 2));
+                        List<Symbol> bottomSymbols = BaselinesMethods.FindBottomSymbols(tmpBaselines, symbol, (int)(symbol.Width / 2));
+                        List<Symbol> upperSymbols = BaselinesMethods.FindUpperSymbols(tmpBaselines, symbol, (int)(symbol.Width / 2));
                         if ((bottomSymbols.Count == 1) && (upperSymbols.Count == 0))
                         {
                             Symbol bottomSymbol = bottomSymbols[0];
@@ -130,14 +130,14 @@ namespace MathRecognition
 
             return equals;
         }
-        private static void checkAllSqrts(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
+        private static void checkAllSqrts(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork)
         {
             Symbol sqrt = getLeastEmptySqrt(baselines);
             if (sqrt != null)
             {
-                List<Symbol> innerSymbols = Baselines.FindInnerSymbols(baselines, sqrt);
+                List<Symbol> innerSymbols = BaselinesMethods.FindInnerSymbols(baselines, sqrt);
 
-                sqrt.Baselines[2] = Baselines.CreateBaselines(innerSymbols, symbolsFilename);
+                sqrt.Baselines[2] = BaselinesMethods.CreateBaselines(innerSymbols, symbolsFilename);
 
                 foreach (List<Symbol> baseline in baselines)
                     foreach (Symbol innerSymbol in innerSymbols)
@@ -171,16 +171,16 @@ namespace MathRecognition
 
             return leastEmptySqrt;
         }
-        private static void checkAllFracs(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
+        private static void checkAllFracs(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork)
         {
             Symbol frac = getBiggestEmptyFrac(baselines);
             if (frac != null)
             {
-                List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, frac);
-                List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, frac);
+                List<Symbol> bottomSymbols = BaselinesMethods.FindBottomSymbols(baselines, frac);
+                List<Symbol> upperSymbols = BaselinesMethods.FindUpperSymbols(baselines, frac);
 
-                frac.Baselines[0] = Baselines.CreateBaselines(upperSymbols, symbolsFilename);
-                frac.Baselines[4] = Baselines.CreateBaselines(bottomSymbols, symbolsFilename);
+                frac.Baselines[0] = BaselinesMethods.CreateBaselines(upperSymbols, symbolsFilename);
+                frac.Baselines[4] = BaselinesMethods.CreateBaselines(bottomSymbols, symbolsFilename);
                 frac.MainRectangle.label = "\\frac";
 
                 foreach (List<Symbol> baseline in baselines)
@@ -233,22 +233,22 @@ namespace MathRecognition
         { 
             if (symbol.MainRectangle.label == "-")
             {
-                List<Symbol> bottomSymbols = Baselines.FindBottomSymbols(baselines, symbol, symbol.Width * 2);
-                List<Symbol> upperSymbols = Baselines.FindUpperSymbols(baselines, symbol, symbol.Width * 2);
+                List<Symbol> bottomSymbols = BaselinesMethods.FindBottomSymbols(baselines, symbol, symbol.Width * 2);
+                List<Symbol> upperSymbols = BaselinesMethods.FindUpperSymbols(baselines, symbol, symbol.Width * 2);
 
                 return (bottomSymbols.Count != 0) && (upperSymbols.Count != 0);
             }
             else 
                 return false;
         }
-        private static void checkAllCompositeOperators(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
+        private static void checkAllCompositeOperators(ref List<List<Symbol>> baselines, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork)
         {
             string[] operatorsCodes = getAllOperators();
             
             foreach (string operatorCode in operatorsCodes)
             {
                 List<Symbol> deletingSymbols = new List<Symbol>();
-                List<List<Symbol>> softBaselines = Baselines.CreateBaselines(Baselines.GetProjection(baselines), symbolsFilename, 0.4);
+                List<List<Symbol>> softBaselines = BaselinesMethods.CreateBaselines(BaselinesMethods.GetProjection(baselines), symbolsFilename, 0.4);
 
                 foreach (List<Symbol> baseline in softBaselines)
                 {
@@ -270,7 +270,7 @@ namespace MathRecognition
                             deletingSymbols.Add(symbolsBaseline[startIndex + j]);
                         }
 
-                        Baselines.AddInBaselines(ref baselines, newSymbol, symbolsFilename);
+                        BaselinesMethods.AddInBaselines(ref baselines, newSymbol, symbolsFilename);
 
                         string stringForInsert = new String(' ', operatorLength);
                         stringOfBaseline = stringOfBaseline.Remove(startIndex, operatorLength);
@@ -288,7 +288,7 @@ namespace MathRecognition
                         baseline.Remove(deletingSymbol);
                 baselines.RemoveAll(x => x.Count == 0);
 
-                Baselines.SortBaselines(ref baselines);
+                BaselinesMethods.SortBaselines(ref baselines);
             }
         }
         private static List<Symbol> getSymbolsBaseline(List<Symbol> baseline)

@@ -61,7 +61,16 @@ namespace MathRecognition.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на ..\\..\\..\\..\\cnn\\runnable_cnn.py.
+        ///   Ищет локализованную строку, похожую на 4.
+        /// </summary>
+        internal static string NEURAL_NETWORK_PROCESSES_MAX_NUMBER {
+            get {
+                return ResourceManager.GetString("NEURAL_NETWORK_PROCESSES_MAX_NUMBER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на ..\\..\\..\\..\\neuralNetworkAdapter\\runnable_cnn.py.
         /// </summary>
         internal static string PYTHON_SCRIPT_FILEPATH {
             get {

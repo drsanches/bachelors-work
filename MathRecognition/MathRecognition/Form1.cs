@@ -28,8 +28,6 @@ namespace MathRecognition
             bitmap = new Bitmap(@DIRECTORY_PATH + FILENAME);
             g = Graphics.FromImage(bitmap);
 
-            int c1 = 0;
-            int c2 = 0;
             int[,] array = new int[bitmap.Width, bitmap.Height];
             for (int i = 0; i < bitmap.Width; i++)
                 for (int j = 0; j < bitmap.Height; j++)
@@ -42,10 +40,10 @@ namespace MathRecognition
                         array[i, j] = 0;
 
             Segmentation segmentation = new Segmentation();
-            NeuralNetwork cnn = new NeuralNetwork();
-            Structuring structuring = new Structuring(SYMBOLS_FILENAME, StructuringDelegateCreator.CreateDelegate(SYMBOLS_FILENAME));
+            NeuralNetwork neuralNetworkAdapter = new NeuralNetwork();
+            Structuring structuring = new Structuring(SYMBOLS_FILENAME, StructuringDelegateFactory.Create(SYMBOLS_FILENAME));
             
-            recognizer = new Recognizer(segmentation, cnn, structuring);
+            recognizer = new Recognizer(segmentation, neuralNetworkAdapter, structuring);
             LatexCode = recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));
         }
         private void Form1_Paint(object sender, PaintEventArgs e)

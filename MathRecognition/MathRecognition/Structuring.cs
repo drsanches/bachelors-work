@@ -7,26 +7,24 @@ using Newtonsoft.Json.Linq;
 
 namespace MathRecognition
 {
-    public abstract class StructuringAbstractFactory
+    public interface IStructuring
     {
-        public StructuringAbstractFactory()
-        { }
-        public abstract string getLatexCode(List<Rectangle> rectangles, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork);
+        string GetLatexCode(List<Rectangle> recognizedRectangles, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork);
     }
-    
-    public class Structuring : StructuringAbstractFactory
+
+    public class Structuring : IStructuring
     {
         private StructuringDelegate structuringDelegate;
         private string symbolsFilename;
 
-        public Structuring(string symbolsJsonFilename, StructuringDelegate structDel) : base()
+        public Structuring(string symbolsFilename, StructuringDelegate structuringDelegate) : base()
         {
-            symbolsFilename = symbolsJsonFilename;
-            structuringDelegate = structDel;
+            this.symbolsFilename = symbolsFilename;
+            this.structuringDelegate = structuringDelegate;
         }
-        public override string getLatexCode(List<Rectangle> rectangles, List<Rectangle> notRecognizedRectangles, NeuralNetworkAbstractFactory neuralNetwork)
+        public string GetLatexCode(List<Rectangle> recognizedRectangles, List<Rectangle> notRecognizedRectangles, INeuralNetwork neuralNetwork)
         {
-            List<List<Symbol>> allBaselines = Baselines.CreateBaselines(rectangles, symbolsFilename);
+            List<List<Symbol>> allBaselines = BaselinesMethods.CreateBaselines(recognizedRectangles, symbolsFilename);
             structuringDelegate.Invoke(ref allBaselines, notRecognizedRectangles, neuralNetwork);
             runStructuring(ref allBaselines);
             string latexCode = getBaselineLatexCode(allBaselines[0], symbolsFilename);
@@ -37,7 +35,7 @@ namespace MathRecognition
             int mainBaselineIndex = 0;
             List<Symbol> mainBaseline = baselines[mainBaselineIndex];
             baselines.RemoveAt(mainBaselineIndex);
-            Dictionary<Symbol, List<List<Symbol>>> splitedBaselines = Baselines.GetSplittedIntoGroupsBaselines(baselines, mainBaseline);
+            Dictionary<Symbol, List<List<Symbol>>> splitedBaselines = BaselinesMethods.GetSplittedIntoGroupsBaselines(baselines, mainBaseline);
             
             Symbol[] mainBaselineArray = mainBaseline.ToArray();
             
@@ -46,7 +44,7 @@ namespace MathRecognition
 
             foreach (Symbol mainSymbol in splitedBaselines.Keys)
             {
-                Symbol newSymbol = Baselines.GetSymbolWithAddedBaselines(mainSymbol, splitedBaselines[mainSymbol]);
+                Symbol newSymbol = BaselinesMethods.GetSymbolWithAddedBaselines(mainSymbol, splitedBaselines[mainSymbol]);
                 baselines[0].Add(newSymbol);
             }
 

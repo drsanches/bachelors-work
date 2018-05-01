@@ -10,33 +10,28 @@ using System.Threading;
 
 namespace MathRecognition
 {
-    public abstract class NeuralNetworkAbstractFactory
+    public interface INeuralNetwork
     {
-        public List<Rectangle> NotRecognized;
-        public List<Rectangle> Recognized;
-        public NeuralNetworkAbstractFactory() 
-        {
-            NotRecognized = new List<Rectangle>();
-            Recognized = new List<Rectangle>();
-        }
-        public abstract void RecognizeList(List<Rectangle> notRecognized);
-        public void ClearLists()
-        {
-            Recognized.Clear();
-            NotRecognized.Clear();
-        }
+        void RecognizeList(List<Rectangle> notRecognized);
+        List<Rectangle> GetRecognizedList();
+        List<Rectangle> GetNotRecognizedList();
     }
 
-    public class NeuralNetwork : NeuralNetworkAbstractFactory
+    public class NeuralNetwork : INeuralNetwork
     {
         private string PYTHON_SCRIPT_FILEPATH = Properties.Resources.PYTHON_SCRIPT_FILEPATH;
         private string TEMP_DIRECTORY_PATH = Properties.Resources.TEMP_DIRECTORY_PATH;
+        private int PROCESSES_MAX_NUMBER = int.Parse(Properties.Resources.NEURAL_NETWORK_PROCESSES_MAX_NUMBER);
+        private List<Rectangle> RecognizedRectangles;
+        private List<Rectangle> NotRecognizedRectangles;
         private static object locker = new object();
-        public int processesCount = 4;
-
-        public NeuralNetwork() : base()
-        { }
-        public override void RecognizeList(List<Rectangle> notRecognized)
+        
+        public NeuralNetwork() 
+        {
+            NotRecognizedRectangles = new List<Rectangle>();
+            RecognizedRectangles = new List<Rectangle>();
+        }
+        public void RecognizeList(List<Rectangle> notRecognized)
         {
             ClearLists();
             List<Rectangle>[] lists = cutListOfRectangles(notRecognized);
@@ -52,11 +47,24 @@ namespace MathRecognition
             for (int i = 0; i < threads.Count(); i++)
                 threads[i].Join();
 
-            Recognized.Sort((a, b) => a.TopLeftX.CompareTo(b.TopLeftX));
+            RecognizedRectangles.Sort((a, b) => a.TopLeftX.CompareTo(b.TopLeftX));
+        }
+        public List<Rectangle> GetRecognizedList()
+        {
+            return RecognizedRectangles;
+        }
+        public List<Rectangle> GetNotRecognizedList()
+        {
+            return NotRecognizedRectangles;
+        }
+        public void ClearLists()
+        {
+            RecognizedRectangles.Clear();
+            NotRecognizedRectangles.Clear();
         }
         private List<Rectangle>[] cutListOfRectangles(List<Rectangle> notRecognized)
         {
-            int newProcessesCount = Math.Min(notRecognized.Count, processesCount);
+            int newProcessesCount = Math.Min(notRecognized.Count, PROCESSES_MAX_NUMBER);
             
             List<Rectangle>[] lists = new List<Rectangle>[newProcessesCount];
             
@@ -64,15 +72,15 @@ namespace MathRecognition
                 lists[i] = new List<Rectangle>();
 
             for (int i = 0; i < notRecognized.Count; i++)
-                lists[i % processesCount].Add(notRecognized[i]);
+                lists[i % PROCESSES_MAX_NUMBER].Add(notRecognized[i]);
 
             return lists;
         }
         private void threadFunction(Object obj)
         {
-            RecognizeListForOneProcess((List<Rectangle>)obj);
+            recognizeListForOneProcess((List<Rectangle>)obj);
         }
-        private void RecognizeListForOneProcess(List<Rectangle> notRecognized)
+        private void recognizeListForOneProcess(List<Rectangle> notRecognized)
         {
             string[] arrayPaths = createArrayFiles(notRecognized, TEMP_DIRECTORY_PATH);
             string[] results = recognizeAll(arrayPaths);
@@ -81,7 +89,7 @@ namespace MathRecognition
             for (int i = 0; i < notRecognized.Count; i++)
             {
                 if (results[i].Equals("Error"))
-                    NotRecognized.Add(notRecognized[i]);
+                    NotRecognizedRectangles.Add(notRecognized[i]);
                 else
                 {
                     Rectangle newRectangle = notRecognized[i];
@@ -89,7 +97,7 @@ namespace MathRecognition
                     
                     lock (locker)
                     {
-                        Recognized.Add(newRectangle);
+                        RecognizedRectangles.Add(newRectangle);
                     }
                 }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MathRecognition
 {
-    public static class Baselines
+    public static class BaselinesMethods
     {
         private const double CENTRE_DISPLACEMENT_COEFFICIENT = 0.1;
 

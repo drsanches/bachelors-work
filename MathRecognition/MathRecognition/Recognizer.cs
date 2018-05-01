@@ -11,28 +11,27 @@ namespace MathRecognition
     {
         public List<Rectangle> Recognized;
         public List<Rectangle> NotRecognized;
-        private SegmentationAbstractFactory segmentation;
-        private NeuralNetworkAbstractFactory neuralNetwork;
-        private StructuringAbstractFactory structuring;
+        private ISegmentation segmentation;
+        private INeuralNetwork neuralNetwork;
+        private IStructuring structuring;
 
-        public Recognizer(SegmentationAbstractFactory segmentationFactory, 
-            NeuralNetworkAbstractFactory neuralNetworkFactory, StructuringAbstractFactory structuringFactory)
+        public Recognizer(ISegmentation segmentationStrategy, INeuralNetwork neuralNetworkStrategy, IStructuring structuringStrategy)
         {
             Recognized = new List<Rectangle>();
             NotRecognized = new List<Rectangle>();
-            segmentation = segmentationFactory;
-            neuralNetwork = neuralNetworkFactory;
-            structuring = structuringFactory;
+            segmentation = segmentationStrategy;
+            neuralNetwork = neuralNetworkStrategy;
+            structuring = structuringStrategy;
         }
         public string Recognize(Rectangle rectangle)
         {
             NotRecognized = segmentation.MakeSegmentation(rectangle);
             neuralNetwork.RecognizeList(NotRecognized);
 
-            Recognized = new List<Rectangle>(neuralNetwork.Recognized);
-            NotRecognized = new List<Rectangle>(neuralNetwork.NotRecognized);
+            Recognized = new List<Rectangle>(neuralNetwork.GetRecognizedList());
+            NotRecognized = new List<Rectangle>(neuralNetwork.GetNotRecognizedList());
             
-            string latexCode = structuring.getLatexCode(neuralNetwork.Recognized, neuralNetwork.NotRecognized, neuralNetwork);
+            string latexCode = structuring.GetLatexCode(neuralNetwork.GetRecognizedList(), neuralNetwork.GetNotRecognizedList(), neuralNetwork);
 
             return latexCode;
         }

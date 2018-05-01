@@ -8,27 +8,23 @@ using System.Windows.Forms;
 
 namespace MathRecognition
 {
-    public abstract class SegmentationAbstractFactory
+    public interface ISegmentation
     {
-        public SegmentationAbstractFactory()
-        { }
-        public abstract List<Rectangle> MakeSegmentation(Rectangle rectangle);
+        List<Rectangle> MakeSegmentation(Rectangle rectangle);
     }
 
     //TODO: cuts a little from below
-    public class Segmentation : SegmentationAbstractFactory
+    public class Segmentation : ISegmentation
     {
-        public Segmentation() : base()
-        { }
-        public override List<Rectangle> MakeSegmentation(Rectangle rectangle)
+        public List<Rectangle> MakeSegmentation(Rectangle rectangle)
         {
             List<Rectangle> rectangles = new List<Rectangle>();
             List<Rectangle> segmentedRectangles = new List<Rectangle>();
 
-            segmentedRectangles = MakeLineSegmentation(rectangle);
+            segmentedRectangles = makeLineSegmentation(rectangle);
 
             if (segmentedRectangles.Count == 1)
-                segmentedRectangles = MakeWaveSegmentation(rectangle);
+                segmentedRectangles = makeWaveSegmentation(rectangle);
 
             if (segmentedRectangles.Count > 1)
             {
@@ -57,10 +53,10 @@ namespace MathRecognition
                 s.Add(rect);
             return s;
         }
-        public List<Rectangle> MakeLineSegmentation(Rectangle rectangle)
+        private List<Rectangle> makeLineSegmentation(Rectangle rectangle)
         {
             Rectangle newRectangle = findFormula(rectangle);
-            List<Rectangle> newRectangles = cutByLines(newRectangle, verticalLines(newRectangle), horizontalLines(newRectangle));
+            List<Rectangle> newRectangles = cutByLines(newRectangle, findVerticalLines(newRectangle), findHorizontalLines(newRectangle));
 
             for (int i = newRectangles.Count - 1; i >= 0 ; i--)
             {
@@ -70,7 +66,7 @@ namespace MathRecognition
             }
             return newRectangles;
         }
-        public List<Rectangle> MakeWaveSegmentation(Rectangle rectangle)
+        private List<Rectangle> makeWaveSegmentation(Rectangle rectangle)
         {
             List<Rectangle> partsOfRectangles = new List<Rectangle>();
 
@@ -151,7 +147,7 @@ namespace MathRecognition
             return new Rectangle(rectangle.TopLeftX + x1, rectangle.TopLeftY + y1, 
                                  x2 - x1 + 1, y2 - y1 + 1, rectangle.Array, x1, y1);
         }
-        private List<int> horizontalLines(Rectangle rectangle)
+        private List<int> findHorizontalLines(Rectangle rectangle)
         {
             List<int> lines = new List<int>();
 
@@ -183,7 +179,7 @@ namespace MathRecognition
             lines.Add(rectangle.Height);
             return lines;
         }
-        private List<int> verticalLines(Rectangle rectangle)
+        private List<int> findVerticalLines(Rectangle rectangle)
         {
             List<int> lines = new List<int>();
 
