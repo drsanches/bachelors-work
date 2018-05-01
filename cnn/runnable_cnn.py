@@ -8,8 +8,8 @@ import numpy
 filename = "..\\dataset\\symbols.json"
 input_width = 32
 input_height = 32
-model_filepath = "cnn_data\\cnn15.json"
-weights_filepath = "cnn_data\\cnn15.h5"
+model_filepath = "cnn_data\\cnn16.json"
+weights_filepath = "cnn_data\\cnn16.h5"
 
 
 try:

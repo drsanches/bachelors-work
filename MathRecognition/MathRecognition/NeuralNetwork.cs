@@ -31,35 +31,34 @@ namespace MathRecognition
     {
         private string PYTHON_SCRIPT_FILEPATH = Properties.Resources.PYTHON_SCRIPT_FILEPATH;
         private string TEMP_DIRECTORY_PATH = Properties.Resources.TEMP_DIRECTORY_PATH;
-        //TODO: Here may be multithreading bug caused by adding into one list.
+        private static object locker = new object();
         public int processesCount = 4;
 
         public NeuralNetwork() : base()
         { }
         public override void RecognizeList(List<Rectangle> notRecognized)
         {
+            ClearLists();
             List<Rectangle>[] lists = cutListOfRectangles(notRecognized);
             Thread[] threads = new Thread[lists.Length];
             
-            for (int i = 0; i < processesCount; i++)
+            for (int i = 0; i < threads.Count(); i++)
             {
                 threads[i] = new Thread(new ParameterizedThreadStart(threadFunction));
                 threads[i].Name = "Thread-" + i.ToString();
                 threads[i].Start(lists[i]);
             }
 
-            for (int i = 0; i < processesCount; i++)
+            for (int i = 0; i < threads.Count(); i++)
                 threads[i].Join();
 
             Recognized.Sort((a, b) => a.TopLeftX.CompareTo(b.TopLeftX));
         }
-        private void threadFunction(Object obj)
-        {
-            RecognizeListForOneProcess((List<Rectangle>)obj);
-        }
         private List<Rectangle>[] cutListOfRectangles(List<Rectangle> notRecognized)
         {
-            List<Rectangle>[] lists = new List<Rectangle>[processesCount];
+            int newProcessesCount = Math.Min(notRecognized.Count, processesCount);
+            
+            List<Rectangle>[] lists = new List<Rectangle>[newProcessesCount];
             
             for (int i = 0; i < lists.Length; i++)
                 lists[i] = new List<Rectangle>();
@@ -68,6 +67,10 @@ namespace MathRecognition
                 lists[i % processesCount].Add(notRecognized[i]);
 
             return lists;
+        }
+        private void threadFunction(Object obj)
+        {
+            RecognizeListForOneProcess((List<Rectangle>)obj);
         }
         private void RecognizeListForOneProcess(List<Rectangle> notRecognized)
         {
@@ -83,7 +86,11 @@ namespace MathRecognition
                 {
                     Rectangle newRectangle = notRecognized[i];
                     newRectangle.label = results[i];
-                    Recognized.Add(newRectangle);
+                    
+                    lock (locker)
+                    {
+                        Recognized.Add(newRectangle);
+                    }
                 }
 
                 deleteArrayFiles(arrayPaths);

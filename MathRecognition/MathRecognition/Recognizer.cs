@@ -11,7 +11,6 @@ namespace MathRecognition
     {
         public List<Rectangle> Recognized;
         public List<Rectangle> NotRecognized;
-        public List<Rectangle> CanNotBeRecognized;
         private SegmentationAbstractFactory segmentation;
         private NeuralNetworkAbstractFactory neuralNetwork;
         private StructuringAbstractFactory structuring;
@@ -21,7 +20,6 @@ namespace MathRecognition
         {
             Recognized = new List<Rectangle>();
             NotRecognized = new List<Rectangle>();
-            CanNotBeRecognized = new List<Rectangle>();
             segmentation = segmentationFactory;
             neuralNetwork = neuralNetworkFactory;
             structuring = structuringFactory;
@@ -31,10 +29,10 @@ namespace MathRecognition
             NotRecognized = segmentation.MakeFullSegmentation(rectangle);
             neuralNetwork.RecognizeList(NotRecognized);
 
-            Recognized = neuralNetwork.Recognized;
-            CanNotBeRecognized = neuralNetwork.NotRecognized;
+            Recognized = new List<Rectangle>(neuralNetwork.Recognized);
+            NotRecognized = new List<Rectangle>(neuralNetwork.NotRecognized);
             
-            string latexCode = structuring.getLatexCode(Recognized, CanNotBeRecognized, neuralNetwork);
+            string latexCode = structuring.getLatexCode(neuralNetwork.Recognized, neuralNetwork.NotRecognized, neuralNetwork);
 
             return latexCode;
         }

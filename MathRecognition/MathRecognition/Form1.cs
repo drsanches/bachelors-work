@@ -28,11 +28,18 @@ namespace MathRecognition
             bitmap = new Bitmap(@DIRECTORY_PATH + FILENAME);
             g = Graphics.FromImage(bitmap);
 
+            int c1 = 0;
+            int c2 = 0;
             int[,] array = new int[bitmap.Width, bitmap.Height];
             for (int i = 0; i < bitmap.Width; i++)
                 for (int j = 0; j < bitmap.Height; j++)
-                    if ((int)bitmap.GetPixel(i, j).GetBrightness() <= 0.2)
-                        array[i, j] = 1;
+                    if (bitmap.GetPixel(i, j).GetBrightness() <= 0.5)
+                    {
+                        float a = bitmap.GetPixel(i, j).GetBrightness();
+                        array[i, j] = 1; 
+                    }
+                    else
+                        array[i, j] = 0;
 
             Segmentation segmentation = new Segmentation();
             NeuralNetwork cnn = new NeuralNetwork();
@@ -60,9 +67,6 @@ namespace MathRecognition
 
             foreach (Rectangle r in recognizer.NotRecognized)
                 e.Graphics.DrawRectangle(new Pen(Color.Yellow), r.TopLeftX, r.TopLeftY, r.Width, r.Height);
-
-            foreach (Rectangle r in recognizer.CanNotBeRecognized)
-                e.Graphics.DrawRectangle(new Pen(Color.Red), r.TopLeftX, r.TopLeftY, r.Width, r.Height);
 
             foreach (Rectangle r in recognizer.Recognized)
                 e.Graphics.DrawString(r.label, new Font("Arial", 16), new SolidBrush(Color.Red), r.TopLeftX, r.TopLeftY);

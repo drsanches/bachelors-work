@@ -6,8 +6,8 @@ from keras.callbacks import TensorBoard
 
 
 dataset_filename = "..\\dataset\\dataset-32x32.npz"
-model_filepath = "cnn_data\\cnn15.json"
-weights_filepath = "cnn_data\\cnn15.h5"
+model_filepath = "cnn_data\\cnn16.json"
+weights_filepath = "cnn_data\\cnn16.h5"
 
 # Load dataset
 dataset = numpy.load(dataset_filename)
@@ -40,7 +40,7 @@ model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accur
 print(model.summary())
 
 # Train the network
-tensorboard=TensorBoard(log_dir='./logs', write_graph=True)
+tensorboard = TensorBoard(log_dir='./logs', write_graph=True)
 history = model.fit(X_train, Y_train,
                     batch_size=out_count*5,
                     epochs=50,
