@@ -42,13 +42,13 @@ namespace MathRecognition
 
             foreach (List<Symbol> baseline in baselines)
                 foreach (Symbol symbol in baseline)
-                    if (symbol.MainRectangle.label == ".")
+                    if (symbol.MainRectangle.Label == ".")
                     {
                         List<Symbol> sqrtBottomSymbols = BaselinesMethods.FindBottomSymbols(baselines, symbol, symbol.Height * 5);
                         List<Symbol> bottomSymbols = new List<Symbol>();
                         
                         foreach (Symbol sqrtBottomSymbol in sqrtBottomSymbols)
-                            if (sqrtBottomSymbol.MainRectangle.label != "\\sqrt")
+                            if (sqrtBottomSymbol.MainRectangle.Label != "\\sqrt")
                                 bottomSymbols.Add(sqrtBottomSymbol);
 
                         if (bottomSymbols.Count == 1)
@@ -91,7 +91,7 @@ namespace MathRecognition
             foreach (Symbol key in equals.Keys)
             {
                 Rectangle newRectangle = key.MainRectangle + equals[key].MainRectangle;
-                newRectangle.label = "=";
+                newRectangle.Label = "=";
                 BaselinesMethods.AddInBaselines(ref baselines, newRectangle, symbolsFilename);
             }
 
@@ -105,14 +105,14 @@ namespace MathRecognition
             foreach (List<Symbol> baseline in tmpBaselines)
                 foreach (Symbol symbol in baseline)
                 {
-                    if (symbol.MainRectangle.label == "-")
+                    if (symbol.MainRectangle.Label == "-")
                     {
                         List<Symbol> bottomSymbols = BaselinesMethods.FindBottomSymbols(tmpBaselines, symbol, (int)(symbol.Width / 2));
                         List<Symbol> upperSymbols = BaselinesMethods.FindUpperSymbols(tmpBaselines, symbol, (int)(symbol.Width / 2));
                         if ((bottomSymbols.Count == 1) && (upperSymbols.Count == 0))
                         {
                             Symbol bottomSymbol = bottomSymbols[0];
-                            if ((bottomSymbol.MainRectangle.label == "-") &&
+                            if ((bottomSymbol.MainRectangle.Label == "-") &&
                                     (Math.Abs(bottomSymbol.Width - symbol.Width) < Math.Max(bottomSymbol.Width, symbol.Width) * LINE_FAULT) &&
                                     (equals.Keys.ToList().FindIndex(x => x == bottomSymbol) == -1))
                                 equals.Add(symbol, bottomSymbol);
@@ -120,7 +120,7 @@ namespace MathRecognition
                         if ((bottomSymbols.Count == 0) && (upperSymbols.Count == 1))
                         {
                             Symbol upperSymbol = upperSymbols[0];
-                            if ((upperSymbol.MainRectangle.label == "-") &&
+                            if ((upperSymbol.MainRectangle.Label == "-") &&
                                     (Math.Abs(upperSymbol.Width - symbol.Width) < Math.Max(upperSymbol.Width, symbol.Width) * LINE_FAULT) &&
                                     (equals.Keys.ToList().FindIndex(x => x == upperSymbol) == -1))
                                 equals.Add(symbol, upperSymbol);
@@ -155,7 +155,7 @@ namespace MathRecognition
             foreach (List<Symbol> baseline in baselines)
                 foreach (Symbol symbol in baseline)
                 {
-                    if ((symbol.MainRectangle.label == "\\sqrt") && (symbol.Baselines[2] == null))
+                    if ((symbol.MainRectangle.Label == "\\sqrt") && (symbol.Baselines[2] == null))
                     {
                         if (leastEmptySqrt != null)
                         {
@@ -181,7 +181,7 @@ namespace MathRecognition
 
                 frac.Baselines[0] = BaselinesMethods.CreateBaselines(upperSymbols, symbolsFilename);
                 frac.Baselines[4] = BaselinesMethods.CreateBaselines(bottomSymbols, symbolsFilename);
-                frac.MainRectangle.label = "\\frac";
+                frac.MainRectangle.Label = "\\frac";
 
                 foreach (List<Symbol> baseline in baselines)
                 {
@@ -231,7 +231,7 @@ namespace MathRecognition
         }
         private static bool isFrac(List<List<Symbol>> baselines, Symbol symbol)
         { 
-            if (symbol.MainRectangle.label == "-")
+            if (symbol.MainRectangle.Label == "-")
             {
                 List<Symbol> bottomSymbols = BaselinesMethods.FindBottomSymbols(baselines, symbol, symbol.Width * 2);
                 List<Symbol> upperSymbols = BaselinesMethods.FindUpperSymbols(baselines, symbol, symbol.Width * 2);
@@ -265,7 +265,7 @@ namespace MathRecognition
                         for (int j = 1; j < operatorLength; j++)
                         {
                             Rectangle newRectangle = newSymbol.MainRectangle + symbolsBaseline[startIndex + j].MainRectangle;
-                            newRectangle.label = operatorCode;
+                            newRectangle.Label = operatorCode;
                             newSymbol = new Symbol(newRectangle, symbolsFilename);
                             deletingSymbols.Add(symbolsBaseline[startIndex + j]);
                         }
@@ -296,7 +296,7 @@ namespace MathRecognition
             List<Symbol> symbolsBaseline = new List<Symbol>();
 
             foreach (Symbol symbol in baseline)
-                if (symbol.MainRectangle.label[0] != '\\')
+                if (symbol.MainRectangle.Label[0] != '\\')
                     symbolsBaseline.Add(symbol);
 
             return symbolsBaseline;
@@ -317,8 +317,8 @@ namespace MathRecognition
             string stringOfBaseline = "";
 
             foreach (Symbol symbol in baseline)
-                if (symbol.MainRectangle.label[0] != '\\')
-                    stringOfBaseline += symbol.MainRectangle.label;
+                if (symbol.MainRectangle.Label[0] != '\\')
+                    stringOfBaseline += symbol.MainRectangle.Label;
 
             return stringOfBaseline;
         }

@@ -14,10 +14,10 @@ namespace MathRecognition
         public int TopLeftX, TopLeftY;
         public int Width, Height;
         public int[,] Array;
-        public string label;
+        public string Label;
         public Rectangle(int topLeftX, int topLeftY, int width, int height, int[,] array, int startAtArrayX, int startAtArrayY)
         {
-            label = "";
+            Label = "";
             TopLeftX = topLeftX;
             TopLeftY = topLeftY;
             Width = width;
@@ -29,7 +29,7 @@ namespace MathRecognition
         }
         public Rectangle(int topLeftX, int topLeftY, int width, int height)
         {
-            label = "";
+            Label = "";
             TopLeftX = topLeftX;
             TopLeftY = topLeftY;
             Width = width;
@@ -39,7 +39,7 @@ namespace MathRecognition
         //TODO: Create mask
         public Rectangle(Bitmap bitmap)
         {
-            label = "";
+            Label = "";
             TopLeftX = 0;
             TopLeftY = 0;
             Width = bitmap.Width;
@@ -48,7 +48,7 @@ namespace MathRecognition
             for (int i = 0; i < Width; i++)
                 for (int j = 0; j < Height; j++)
                 {
-                    if ((int)bitmap.GetPixel(i, j).GetBrightness() <= 0.3)
+                    if (bitmap.GetPixel(i, j).GetBrightness() <= 0.3)
                         Array[i, j] = 1;
                 }
         }
@@ -69,9 +69,9 @@ namespace MathRecognition
             else
                 return false;
         }
-        public static bool operator !=(Rectangle r1, Rectangle r2)
+        public static bool operator !=(Rectangle a, Rectangle b)
         {
-            return !(r1 == r2);
+            return !(a == b);
         }
         public static Rectangle operator -(Rectangle a, Rectangle b)
         {
@@ -131,12 +131,14 @@ namespace MathRecognition
                         return false;
             return true;
         }
-        public Point GetCentrePoint()
+        public int GetCentreX()
         {
-            Point p = new Point();
-            p.X = TopLeftX + Width / 2;
-            p.Y = TopLeftY + Height / 2;
-            return p;
+            return TopLeftX + Width / 2;
         }
+        public int GetCentreY()
+        {
+            return TopLeftY + Height / 2;
+        }
+
     }
 }

@@ -93,7 +93,7 @@ namespace MathRecognition
                 else
                 {
                     Rectangle newRectangle = notRecognized[i];
-                    newRectangle.label = results[i];
+                    newRectangle.Label = results[i];
                     
                     lock (locker)
                     {

@@ -67,7 +67,7 @@ namespace MathRecognition
                 e.Graphics.DrawRectangle(new Pen(Color.Yellow), r.TopLeftX, r.TopLeftY, r.Width, r.Height);
 
             foreach (Rectangle r in recognizer.Recognized)
-                e.Graphics.DrawString(r.label, new Font("Arial", 16), new SolidBrush(Color.Red), r.TopLeftX, r.TopLeftY);
+                e.Graphics.DrawString(r.Label, new Font("Arial", 16), new SolidBrush(Color.Red), r.TopLeftX, r.TopLeftY);
         }
         private void Form1_Activated(object sender, EventArgs e)
         {

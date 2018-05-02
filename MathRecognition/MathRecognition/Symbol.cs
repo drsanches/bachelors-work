@@ -9,10 +9,10 @@ namespace MathRecognition
 {
     public class Symbol
     {
-        public int TopLeftX;
-        public int TopLeftY;
-        public int Width;
-        public int Height;
+        public int TopLeftX { get { return MainRectangle.TopLeftX; } }
+        public int TopLeftY { get { return MainRectangle.TopLeftY; } }
+        public int Width { get { return MainRectangle.Width; } }
+        public int Height { get { return MainRectangle.Height; } }
         public int MainCentreX;
         public int MainCentreY;
         public Rectangle MainRectangle;
@@ -20,14 +20,10 @@ namespace MathRecognition
 
         public Symbol(Rectangle rectangle, string symbolsFilename)
         {
-            TopLeftX = rectangle.TopLeftX;
-            TopLeftY = rectangle.TopLeftY;
-            Width = rectangle.Width;
-            Height = rectangle.Height;
             MainRectangle = rectangle;
             Baselines = new List<List<Symbol>>[5];
-            MainCentreX = rectangle.GetCentrePoint().X;
-            MainCentreY = rectangle.GetCentrePoint().Y + (int)(Height * getCenterYShift(rectangle.label, symbolsFilename));
+            MainCentreX = rectangle.GetCentreX();
+            MainCentreY = rectangle.GetCentreY() + (int)(Height * getCenterYShift(rectangle.Label, symbolsFilename));
         }
         public Symbol plus(Symbol b, string symbolsFilename)
         {

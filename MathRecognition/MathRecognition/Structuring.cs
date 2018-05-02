@@ -67,7 +67,7 @@ namespace MathRecognition
         }
         private string getSymbolLatexCode(Symbol symbol, string symbolsFilename)
         {
-            string latexCode = symbol.MainRectangle.label;
+            string latexCode = symbol.MainRectangle.Label;
 
             switch (getSymbolType(symbol, symbolsFilename))
             {
@@ -133,10 +133,10 @@ namespace MathRecognition
         }
         private string getSymbolType(Symbol symbol, string symbolsFilename)
         {
-            if (symbol.MainRectangle.label == "\\frac")
+            if (symbol.MainRectangle.Label == "\\frac")
                 return "\\frac";
             else
-                if (symbol.MainRectangle.label == "\\sqrt")
+                if (symbol.MainRectangle.Label == "\\sqrt")
                     return "\\sqrt";
 
             
@@ -149,12 +149,12 @@ namespace MathRecognition
 
             JObject elementJObject = JObject.Parse(element.ToString());
             string symbols = elementJObject.GetValue("SumType").ToString();
-            if (Array.IndexOf(symbols.Split(' '), symbol.MainRectangle.label) != -1)
+            if (Array.IndexOf(symbols.Split(' '), symbol.MainRectangle.Label) != -1)
                 return "SumType";
 
             elementJObject = JObject.Parse(element.ToString());
             symbols = elementJObject.GetValue("MaxType").ToString();
-            if (Array.IndexOf(symbols.Split(' '), symbol.MainRectangle.label) != -1)
+            if (Array.IndexOf(symbols.Split(' '), symbol.MainRectangle.Label) != -1)
                 return "MaxType";
 
             return "Simple";
