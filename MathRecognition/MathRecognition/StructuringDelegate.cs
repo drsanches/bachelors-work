@@ -40,6 +40,7 @@ namespace MathRecognition
                 deletingSymbols.Add(newSymbol);
             }
 
+            //TODO: fix bug here (collection can be changed in for)
             foreach (List<Symbol> baseline in baselines)
                 foreach (Symbol symbol in baseline)
                     if (symbol.MainRectangle.Label == ".")
@@ -136,16 +137,24 @@ namespace MathRecognition
             if (sqrt != null)
             {
                 List<Symbol> innerSymbols = BaselinesMethods.FindInnerSymbols(baselines, sqrt);
+                if (innerSymbols.Count != 0)
+                {
+                    sqrt.Baselines[2] = new List<List<Symbol>>();
 
-                sqrt.Baselines[2] = BaselinesMethods.CreateBaselines(innerSymbols, symbolsFilename);
-
-                foreach (List<Symbol> baseline in baselines)
                     foreach (Symbol innerSymbol in innerSymbols)
-                        baseline.Remove(innerSymbol);
-                
-                baselines.RemoveAll(x => x.Count == 0);
+                        if (innerSymbol.Height < sqrt.Height)
+                            BaselinesMethods.AddInBaselines(ref sqrt.Baselines[2], innerSymbol, symbolsFilename);
 
-                checkAllSqrts(ref baselines, notRecognizedRectangles, neuralNetwork);
+                    foreach (List<Symbol> baseline in baselines)
+                        foreach (Symbol innerSymbol in innerSymbols)
+                            if (innerSymbol.Height < sqrt.Height)                            
+                                baseline.Remove(innerSymbol);
+
+                    baselines.RemoveAll(x => x.Count == 0);
+                    BaselinesMethods.SortBaselines(ref sqrt.Baselines[2]);
+
+                    checkAllSqrts(ref baselines, notRecognizedRectangles, neuralNetwork);
+                }
             }
         }
         private static Symbol getLeastEmptySqrt(List<List<Symbol>> baselines)

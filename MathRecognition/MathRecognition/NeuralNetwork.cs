@@ -149,7 +149,11 @@ namespace MathRecognition
         private void deleteArrayFiles(string[] filepaths)
         {
             foreach (string filepath in filepaths)
-                File.Delete(filepath);
+                try
+                {
+                    File.Delete(filepath);
+                }
+                catch { }
         }
     }
 }

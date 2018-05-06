@@ -13,8 +13,9 @@ namespace MathRecognition
     public partial class Form1 : Form
     {
         private const string DIRECTORY_PATH = "..\\..\\..\\..\\Formulas\\";
-        //TODO fix: test2.png
-        private const string FILENAME = "long_sqrt.png";
+        //TODO: fix difficult_stuff.png
+        private const string FILENAME = "..\\..\\VKR\\images\\tests\\fail-04.png";
+        //private const string FILENAME = "composite_operators.png";
         private const string SYMBOLS_FILENAME = "..\\..\\..\\..\\dataset\\Symbols.json";
         Bitmap bitmap;
         Graphics g;
@@ -27,11 +28,11 @@ namespace MathRecognition
 
             bitmap = new Bitmap(@DIRECTORY_PATH + FILENAME);
             g = Graphics.FromImage(bitmap);
-
+            
             int[,] array = new int[bitmap.Width, bitmap.Height];
             for (int i = 0; i < bitmap.Width; i++)
                 for (int j = 0; j < bitmap.Height; j++)
-                    if (bitmap.GetPixel(i, j).GetBrightness() <= 0.5)
+                    if (bitmap.GetPixel(i, j).GetBrightness() < 1)
                     {
                         float a = bitmap.GetPixel(i, j).GetBrightness();
                         array[i, j] = 1; 
@@ -45,6 +46,7 @@ namespace MathRecognition
             
             recognizer = new Recognizer(segmentation, neuralNetworkAdapter, structuring);
             LatexCode = recognizer.Recognize(new Rectangle(0, 0, bitmap.Width - 1, bitmap.Height - 1, array, 0, 0));
+
         }
         private void Form1_Paint(object sender, PaintEventArgs e)
         {

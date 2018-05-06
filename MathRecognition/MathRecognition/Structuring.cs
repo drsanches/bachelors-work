@@ -73,6 +73,12 @@ namespace MathRecognition
             {
                 case "\\sqrt":
                     latexCode += getBaselineLatexCode(symbol.Baselines[2][0], symbolsFilename);
+
+                    if (symbol.Baselines[3] != null)
+                    {
+                        string latexString = getBaselineLatexCode(symbol.Baselines[3][0], symbolsFilename);
+                        latexCode += latexString.Substring(1, latexString.Length - 2);
+                    }
                     break;
 
                 case "\\frac":
@@ -118,6 +124,7 @@ namespace MathRecognition
                         latexCode += "_";
                         latexCode += getBaselineLatexCode(symbol.Baselines[3][0], symbolsFilename);
                     }
+                    latexCode += " ";
                     break;
 
                 case "MaxType":
@@ -126,6 +133,7 @@ namespace MathRecognition
                         latexCode += "_";
                         latexCode += getBaselineLatexCode(symbol.Baselines[4][0], symbolsFilename);
                     }
+                    latexCode += " ";
                     break;
             }
 

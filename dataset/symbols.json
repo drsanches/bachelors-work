@@ -9,6 +9,10 @@
       "Symbols": "g p q y \\sup",
       "Change": -0.2
     }
+ , {
+      "Symbols": "f",
+      "Change": 0.1
+    }
   ],
   "Types": {
     "SumType": "\\int \\sum \\prod",
